@@ -27,6 +27,11 @@
 #
 #   bin/ansible               The Ansible executable
 #   bin/eyaml                 The eyaml executable
+#   roles/                    If you pass $SUITCASE_ANSIBLE_REQUIREMENTS,
+#                             the Ansible roles will be installed there.
+#                             You should therefore export
+#                             ANSIBLE_ROLES_PATH=$SUITCASE_DIR/roles from
+#                             the wrapper script
 #
 #   pyenv/                    Various support directories
 #   pyenv/bin/
@@ -70,7 +75,7 @@ main () {
     case "$satisfied" in
         *ansible*)
             if [ -n "$SUITCASE_ANSIBLE_REQUIREMENTS" ]; then
-                ansible_requirements "$SUITCASE_ANSIBLE_REQUIREMENTS" || \
+                ensure_ansible_requirements "$SUITCASE_ANSIBLE_REQUIREMENTS" || \
                     unsatisfied ansible_requirements
             fi ;;
     esac
@@ -157,6 +162,11 @@ ensure_pyenv () {
     check_version pyenv "$(set +x; run_pyenv 2>&1 | head -1 |cut -d' ' -f2)"
 }
 
+ensure_ansible_requirements () {
+    ensure_dir "$SUITCASE_DIR/roles"
+    "$SUITCASE_DIR"/bin/ansible-galaxy install -p "$SUITCASE_DIR/roles" -i -r "$1"
+}
+
 run_pyenv () {
     env PYENV_ROOT="$SUITCASE_DIR/pyenv" PATH="$SUITCASE_DIR/pyenv/bin:$PATH" \
         "$SUITCASE_DIR"/pyenv/bin/pyenv "$@"
@@ -185,6 +195,7 @@ ensure_ansible () {
         ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink ../python/bin/ansible "$SUITCASE_DIR/bin/"
         ensure_symlink ../python/bin/ansible-playbook "$SUITCASE_DIR/bin/"
+        ensure_symlink ../python/bin/ansible-galaxy "$SUITCASE_DIR/bin/"
     fi
 
     check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
