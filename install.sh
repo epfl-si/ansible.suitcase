@@ -178,11 +178,13 @@ ensure_python () {
 }
 
 ensure_ansible () {
-    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" ]; then
+    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o
+         ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
         ensure_python
         "$SUITCASE_DIR"/python/bin/pip install ansible=="${SUITCASE_ANSIBLE_VERSION}"
         ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink ../python/bin/ansible "$SUITCASE_DIR/bin/"
+        ensure_symlink ../python/bin/ansible-playbook "$SUITCASE_DIR/bin/"
     fi
 
     check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
