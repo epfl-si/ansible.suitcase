@@ -138,7 +138,11 @@ ensure_dir () {
 
 ensure_symlink () {
     local from="$1"
-    local to="$(echo "$2" | sed 's|/$||')"
+    local to
+    case "$2" in
+        */) to="$2$(basename $1)" ;;
+        *) to="$2" ;;
+    esac
     rm -f "$to" 2>/dev/null || true
     ln -s "$from" "$to"
 }
