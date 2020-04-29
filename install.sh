@@ -271,7 +271,7 @@ EOF
 }
 
 shims () {
-    if ! type -p git >/dev/null; then
+    if ! which git >/dev/null; then
         git() {
             echo "Error: git is required to proceed. Please install git and try again." >&2
             exit 1
