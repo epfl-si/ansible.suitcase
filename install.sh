@@ -12,6 +12,9 @@
 #                                 requirement stack to use.
 #                                 (Reasonable defaults are provided)
 #
+# $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
+#                                 (separated with spaces)
+#
 # $SUITCASE_ANSIBLE_REQUIREMENTS  If set, shall point to a requirements.yml
 #                                 file
 #
@@ -65,6 +68,7 @@ main () {
         fi
     fi
 
+    ensure_pip     || unsatisfied pip
     ensure_ansible || unsatisfied ansible
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
@@ -185,6 +189,17 @@ ensure_python () {
     fi
 
     check_version python "$("$targetdir"/bin/python --version | sed 's/Python //')"
+}
+
+ensure_pip () {
+    ensure_python
+    for dep in $SUITCASE_PIP_EXTRA; do
+        if "$SUITCASE_DIR"/python/bin/pip3 install "$dep"; then
+            satisfied "pip-$dep"
+        else
+            unsatisfied "pip-$dep"
+        fi
+    done
 }
 
 ensure_ansible () {
