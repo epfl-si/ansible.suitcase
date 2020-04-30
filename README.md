@@ -25,3 +25,9 @@ where
 - `SUITCASE_DIR` and `SUITCASE_ANSIBLE_REQUIREMENTS` are parameters to the `install.sh` script. See the source code of [`install.sh`](./install.sh) for a list of these.
 - `ansible-tmp/.versions` is a file that will only be created when the install is complete; you can use it as a stamp file so as to avoid `curl`ing the script again.
 - `PATH` and `ANSIBLE_ROLES_PATH` are altered to hook into the suitcase output directory. Again, look into the source code of `install.sh` for the directory structure below the suitcase directory.
+
+## FAQ
+
+### Q: Is there a simple project that uses this, that I could take a look at?
+
+A: [Here you go.](https://github.com/epfl-si/ops.tuleap/tree/ansible-starterpack)
