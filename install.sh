@@ -73,7 +73,11 @@ main () {
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
       ensure_keybase || unsatisfied keybase
-      ensure_eyaml || unsatisfied eyaml
+      case "$unsatisfied" in
+          ruby|"ruby "*|*" ruby"|*" ruby "*)
+              warn "No Ruby available; skipping eyaml installation" ;;
+          *) ensure_eyaml || unsatisfied eyaml ;;
+      esac
     fi
 
     case "$satisfied" in
