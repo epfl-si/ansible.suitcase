@@ -289,6 +289,16 @@ EOF
     fi
 }
 
+# On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
+shim_libreadline_linux () {
+    if [ "$(uname -s)" = "Linux" ]; then
+        if [ ! -f "/usr/include/readline/readline.h" ]; then
+            echo "Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
+            exit 1
+        fi
+    fi
+}
+
 shims () {
     if ! which git >/dev/null; then
         git() {
@@ -296,6 +306,7 @@ shims () {
             exit 1
         }
     fi
+    shim_libreadline_linux
 }
 
 shims
