@@ -241,6 +241,7 @@ ensure_ruby () {
     local targetdir="$SUITCASE_DIR/ruby"
     if [ ! -x "$targetdir"/bin/ruby ]; then
         ensure_rbenv
+        ensure_libreadline_linux
         local rbenv_version_dir="rbenv/versions/$version"
         if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
             run_rbenv install "$version"
@@ -290,10 +291,10 @@ EOF
 }
 
 # On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
-shim_libreadline_linux () {
+ensure_libreadline_linux () {
     if [ "$(uname -s)" = "Linux" ]; then
         if [ ! -f "/usr/include/readline/readline.h" ]; then
-            echo "Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
+            echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
             exit 1
         fi
     fi
@@ -306,7 +307,6 @@ shims () {
             exit 1
         }
     fi
-    shim_libreadline_linux
 }
 
 shims
