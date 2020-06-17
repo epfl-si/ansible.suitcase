@@ -241,9 +241,9 @@ ensure_ruby () {
     local targetdir="$SUITCASE_DIR/ruby"
     if [ ! -x "$targetdir"/bin/ruby ]; then
         ensure_rbenv
-        ensure_libreadline_linux
         local rbenv_version_dir="rbenv/versions/$version"
         if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
+            ensure_libreadline_linux
             run_rbenv install "$version"
         fi
         ensure_symlink "$rbenv_version_dir" "$SUITCASE_DIR/ruby"
