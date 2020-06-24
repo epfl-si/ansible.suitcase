@@ -180,8 +180,8 @@ run_pyenv () {
         "$SUITCASE_DIR"/pyenv/bin/pyenv "$@"
 }
 
-ensure_python () {
-    if [ ! -x "$SUITCASE_DIR"/bin/python  ]; then
+ensure_python3 () {
+    if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
         ensure_pyenv
         local version="${SUITCASE_PYTHON_VERSION}"
         if ! run_pyenv versions |grep -w "$version"; then
@@ -192,11 +192,11 @@ ensure_python () {
         ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
 
-    check_version python "$("$SUITCASE_DIR"/bin/python --version | sed 's/Python //')"
+    check_version python "$("$SUITCASE_DIR"/bin/python3 --version | sed 's/Python //')"
 }
 
 ensure_pip () {
-    ensure_python
+    ensure_python3
     for dep in $SUITCASE_PIP_EXTRA; do
         if "$SUITCASE_DIR"/python/bin/pip3 install "$dep"; then
             satisfied "pip-$dep"
@@ -209,7 +209,7 @@ ensure_pip () {
 ensure_ansible () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ensure_python
+        ensure_python3
         "$SUITCASE_DIR"/python/bin/pip install ansible=="${SUITCASE_ANSIBLE_VERSION}"
         ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink ../python/bin/ansible "$SUITCASE_DIR/bin/"
