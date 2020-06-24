@@ -181,8 +181,7 @@ run_pyenv () {
 }
 
 ensure_python () {
-    local targetdir="$SUITCASE_DIR/python"
-    if [ ! -x "$targetdir"/bin/python  ]; then
+    if [ ! -x "$SUITCASE_DIR"/bin/python  ]; then
         ensure_pyenv
         local version="${SUITCASE_PYTHON_VERSION}"
         if ! run_pyenv versions |grep -w "$version"; then
@@ -190,9 +189,10 @@ ensure_python () {
         fi
 
         ensure_symlink "pyenv/versions/$version" "$SUITCASE_DIR"/python
+        ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
 
-    check_version python "$("$targetdir"/bin/python --version | sed 's/Python //')"
+    check_version python "$("$SUITCASE_DIR"/bin/python --version | sed 's/Python //')"
 }
 
 ensure_pip () {
