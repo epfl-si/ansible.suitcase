@@ -243,6 +243,7 @@ ensure_ruby () {
         ensure_rbenv
         local rbenv_version_dir="rbenv/versions/$version"
         if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
+            ensure_libreadline
             run_rbenv install "$version"
         fi
         ensure_symlink "$rbenv_version_dir" "$SUITCASE_DIR/ruby"
@@ -286,6 +287,16 @@ EOF
         warn <<EOF
 Keybase is not installed, cannot decipher and push secrets.
 EOF
+    fi
+}
+
+# On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
+ensure_libreadline () {
+    if [ "$(uname -s)" = "Linux" ]; then
+        if [ ! -f "/usr/include/readline/readline.h" ]; then
+            echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
+            exit 1
+        fi
     fi
 }
 
