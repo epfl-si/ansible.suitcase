@@ -207,7 +207,7 @@ ensure_pip () {
 }
 
 ensure_ansible () {
-    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o
+    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
         ensure_python3
         "$SUITCASE_DIR"/python/bin/pip install ansible=="${SUITCASE_ANSIBLE_VERSION}"
