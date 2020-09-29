@@ -186,6 +186,7 @@ run_pyenv () {
 
 ensure_python3 () {
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
+        ensure_python_build_deps
         ensure_pyenv
         local version="${SUITCASE_PYTHON_VERSION}"
         if ! run_pyenv versions |grep -w "$version"; then
@@ -245,10 +246,10 @@ ensure_ruby () {
     local version="${SUITCASE_RUBY_VERSION}"
     local targetdir="$SUITCASE_DIR/ruby"
     if [ ! -x "$targetdir"/bin/ruby ]; then
+        ensure_ruby_build_deps
         ensure_rbenv
         local rbenv_version_dir="rbenv/versions/$version"
         if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
-            ensure_libreadline
             run_rbenv install "$version"
         fi
         ensure_symlink "$rbenv_version_dir" "$SUITCASE_DIR/ruby"
@@ -295,20 +296,56 @@ EOF
     fi
 }
 
-# On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
-ensure_libreadline () {
-    if [ "$(uname -s)" = "Linux" ]; then
-        if [ ! -f "/usr/include/readline/readline.h" ]; then
-            echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
-            exit 1
-        fi
-    fi
-}
-
 ensure_git () {
     if ! which git >/dev/null; then
         fatal "Error: git is required to proceed. Please install git and try again."
     fi
+}
+
+ensure_cc () {
+    if ! which cc >/dev/null; then
+        echo "Error: a C compiler toolchain is required to proceed. Please install one and try again." >&2
+        exit 1
+    fi
+}
+
+ensure_python_build_deps () {
+    local failed
+
+    case "$(uname -s)" in
+        Linux)
+            # https://github.com/saghul/pythonz#before-installing-python-versions-via-pythonz
+            case "$(lsb_release -s -i)" in
+                Ubuntu|Debian)
+                    for pkg in build-essential zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat-dev libpcap-dev liblzma-dev libpcre3-dev libffi-dev; do
+                        if ! dpkg --get-selections |cut -f1|grep $pkg; then
+                            echo "Missing package: $pkg"
+                            failed="Please install missing packages using apt-get"
+                        fi
+                    done ;;
+                RedHat*|CentOS*)
+                    for pkg in zlib-devel bzip2-devel openssl-devel readline-devel ncurses-devel sqlite-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel libffi-deve; do
+                        if ! rpm -q $pkg; then
+                            echo "Missing package: $pkg"
+                            failed="Please install missing packages using yum or dnf"
+                        fi
+                    done;;
+            esac ;;
+    esac
+    if [ -n "$failed" ]; then warn "$failed"; fi
+    ensure_cc
+    if [ -n "$failed" ]; then exit 1; fi
+}
+
+# On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
+ensure_ruby_build_deps () {
+    case "$(uname -s)" in
+        Linux)
+            if [ ! -f "/usr/include/readline/readline.h" ]; then
+                echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
+                exit 1
+            fi ;;
+    esac
 }
 
 main
