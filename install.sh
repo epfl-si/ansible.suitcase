@@ -94,10 +94,9 @@ main () {
         "")
             mv "$SUITCASE_DIR"/.versions.tmp "$SUITCASE_DIR"/.versions
             exit 0 ;;
-        *ansible*) exit 2 ;;
+        *ansible*) fatal "Ansible is **not** installed; please review errors above." ;;
         *)
-            echo >&2 "Unsatisfied optional requirements: $unsatisfied"
-            exit 0 ;;
+            fatal "Unsatisfied optional requirements: $unsatisfied";;
     esac
 }
 
