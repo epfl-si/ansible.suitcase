@@ -309,7 +309,7 @@ ensure_cc () {
 }
 
 ensure_python_build_deps () {
-    local failed
+    local failed missing_packages
 
     case "$(uname -s)" in
         Linux)
@@ -318,20 +318,20 @@ ensure_python_build_deps () {
                 Ubuntu|Debian)
                     for pkg in build-essential zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat-dev libpcap-dev liblzma-dev libpcre3-dev libffi-dev; do
                         if ! dpkg --get-selections |cut -f1|grep $pkg; then
-                            echo "Missing package: $pkg"
-                            failed="Please install missing packages using apt-get"
+                            failed="Please install missing packages using apt-get: "
+                            missing_packages="$missing_packages $pkg"
                         fi
                     done ;;
                 RedHat*|CentOS*)
                     for pkg in zlib-devel bzip2-devel openssl-devel readline-devel ncurses-devel sqlite-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel libffi-deve; do
                         if ! rpm -q $pkg; then
-                            echo "Missing package: $pkg"
-                            failed="Please install missing packages using yum or dnf"
+                            failed="Please install missing packages using yum or dnf: "
+                            missing_packages="$missing_packages $pkg"
                         fi
                     done;;
             esac ;;
     esac
-    if [ -n "$failed" ]; then warn "$failed"; fi
+    if [ -n "$failed" ]; then warn "$failed $missing_packages"; fi
     ensure_cc
     if [ -n "$failed" ]; then exit 1; fi
 }
