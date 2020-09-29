@@ -191,6 +191,7 @@ ensure_python3 () {
         fi
 
         ensure_symlink "pyenv/versions/$version" "$SUITCASE_DIR"/python
+        ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
 
