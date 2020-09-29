@@ -95,7 +95,9 @@ main () {
             mv "$SUITCASE_DIR"/.versions.tmp "$SUITCASE_DIR"/.versions
             exit 0 ;;
         *ansible*) exit 2 ;;
-        *) exit 0 ;;
+        *)
+            echo >&2 "Unsatisfied optional requirements: $unsatisfied"
+            exit 0 ;;
     esac
 }
 
