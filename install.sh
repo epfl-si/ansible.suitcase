@@ -58,6 +58,8 @@ satisfied=
 unsatisfied=
 
 main () {
+    ensure_git
+
     [ -n "$SUITCASE_DIR" ] || fatal "SUITCASE_DIR is not set; don't know where to install"
     ensure_dir "$SUITCASE_DIR"
     if [ ! -f "$SUITCASE_DIR/.versions.tmp" ]; then
@@ -302,12 +304,8 @@ ensure_libreadline () {
 
 ensure_git () {
     if ! which git >/dev/null; then
-        git() {
-            echo "Error: git is required to proceed. Please install git and try again." >&2
-            exit 1
-        }
+        fatal "Error: git is required to proceed. Please install git and try again."
     fi
 }
 
-ensure_git
 main
