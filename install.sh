@@ -300,7 +300,7 @@ ensure_libreadline () {
     fi
 }
 
-shims () {
+ensure_git () {
     if ! which git >/dev/null; then
         git() {
             echo "Error: git is required to proceed. Please install git and try again." >&2
@@ -309,5 +309,5 @@ shims () {
     fi
 }
 
-shims
+ensure_git
 main
