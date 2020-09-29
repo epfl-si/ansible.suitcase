@@ -109,6 +109,7 @@ warn () {
 }
 
 fatal () {
+    echo >&2; echo >&2
     warn "$@"
     exit 1
 }
