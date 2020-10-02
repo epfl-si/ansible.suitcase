@@ -176,7 +176,7 @@ ensure_pyenv () {
 
 ensure_ansible_requirements () {
     ensure_dir "$SUITCASE_DIR/roles"
-    "$SUITCASE_DIR"/bin/ansible-galaxy install -p "$SUITCASE_DIR/roles" -i -r "$1"
+    "$SUITCASE_DIR"/bin/ansible-galaxy install --force -p "$SUITCASE_DIR/roles" -i -r "$1"
 }
 
 run_pyenv () {
