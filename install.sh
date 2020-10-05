@@ -31,10 +31,12 @@
 #   bin/ansible               The Ansible executable
 #   bin/eyaml                 The eyaml executable
 #   roles/                    If you pass $SUITCASE_ANSIBLE_REQUIREMENTS,
-#                             the Ansible roles will be installed there.
-#                             You should therefore export
-#                             ANSIBLE_ROLES_PATH=$SUITCASE_DIR/roles from
-#                             the wrapper script
+#   ansible_collections/      the Ansible Galaxy roles resp. collections will
+#                             be installed there. You should therefore export
+#                             ANSIBLE_ROLES_PATH=$SUITCASE_DIR/roles and
+#                             ANSIBLE_COLLECTIONS_PATHS=$SUITCASE_DIR
+#                             from the wrapper script (mind the extra “S” at the
+#                             end of ANSIBLE_COLLECTIONS_PATHS!)
 #
 #   pyenv/                    Various support directories
 #   pyenv/bin/
@@ -177,6 +179,7 @@ ensure_pyenv () {
 ensure_ansible_requirements () {
     ensure_dir "$SUITCASE_DIR/roles"
     "$SUITCASE_DIR"/bin/ansible-galaxy install --force -p "$SUITCASE_DIR/roles" -i -r "$1"
+    "$SUITCASE_DIR"/bin/ansible-galaxy collection install --force -p "$SUITCASE_DIR" -i -r "$1"
 }
 
 run_pyenv () {
