@@ -329,7 +329,7 @@ ensure_python_build_deps () {
                         fi
                     done ;;
                 RedHat*|CentOS*)
-                    for pkg in zlib-devel bzip2-devel openssl-devel readline-devel ncurses-devel sqlite-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel libffi-deve; do
+                    for pkg in zlib-devel bzip2-devel openssl-devel readline-devel ncurses-devel sqlite-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel libffi-devel; do
                         if ! rpm -q $pkg; then
                             failed="Please install missing packages using yum or dnf: "
                             missing_packages="$missing_packages $pkg"
