@@ -308,7 +308,7 @@ ensure_git () {
 }
 
 ensure_cc () {
-    if ! which cc >/dev/null; then
+    if ! which gcc >/dev/null; then
         echo "Error: a C compiler toolchain is required to proceed. Please install one and try again." >&2
         exit 1
     fi
