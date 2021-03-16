@@ -26,6 +26,25 @@ where
 - `ansible-tmp/.versions` is a file that will only be created when the install is complete; you can use it as a stamp file so as to avoid `curl`ing the script again.
 - `PATH` and `ANSIBLE_ROLES_PATH` are altered to hook into the suitcase output directory. Again, look into the source code of `install.sh` for the directory structure below the suitcase directory.
 
+
+## List of projects that use `foosible`
+
+* [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
+* [elasticsible](https://github.com/epfl-si/search_inside/blob/main/ansible/elasticsible)
+* [elsible](https://gitlab.epfl.ch/cangiani/esign-ops/-/blob/master/elsible)
+* [exportsible](https://github.com/epfl-si/infoscience-exports/blob/master/ansible/exportsible)
+* [fosrsible](https://github.com/epfl-si/idevfsd.foreman/blob/master/foresible)
+* [gitsible](https://gitlab.com/epfl-idevfsd/gitlab-docker/-/blob/master/ansible/gitsible)
+* [gosible](https://gitlab.com/epfl-idevfsd/go-epfl/-/blob/feature/gosible/ansible/gosible)
+* [isasible](https://github.com/epfl-si/isa-monitoring/blob/master/ansible/isasible)
+* [lhdsible](https://gitlab.epfl.ch/lhd/ops/-/blob/master/lhdsible)
+* [nocsible](https://github.com/epfl-si/external-noc/blob/master/ansible/nocsible)
+* [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
+* [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
+* [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
+* [wpsible](https://github.com/epfl-si/wp-ops/blob/master/ansible/wpsible)
+
+
 ## FAQ
 
 ### Q: Is there a simple project that uses this, that I could take a look at?
