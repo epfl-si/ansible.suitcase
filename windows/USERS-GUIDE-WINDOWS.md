@@ -5,11 +5,11 @@
 <ul>
 <li><p><b>The instructions therein require Windows® 10 or later.</b></p>
 
-<p>It may or may not be technically possible to run the Ansible suitcase on Windows® 7. Unfortunately this requires some serious arcana with names such as <a href="https://chocolatey.org/>chocolatey</a>, <a href="https://chocolatey.org/packages/git">git bash</a> and <a href="https://chocolatey.org/packages/python3">python3</a>. **Also, this mode of operating the suitcase is untested and unmaintained**. Kindly consider upgrading to Windows® 10 instead.</p></li>
+<p>It may or may not be technically possible to run the Ansible suitcase on Windows® 7. Unfortunately this requires some serious arcana with names such as <a href="https://chocolatey.org/">chocolatey</a>, <a href="https://chocolatey.org/packages/git">git bash</a> and <a href="https://chocolatey.org/packages/python3">python3</a>. <b>Also, this mode of operating the suitcase is untested and unmaintained</b>. Kindly consider upgrading to Windows® 10 instead.</p></li>
 
 <li><p><b>You need administrator access to the Windows® machine you will be working from.</b></p>
 
-<li><p><b>You will be using the terminal a lot</b>: first PowerShell running as an administrator, and then the WSL Linux terminal prompt.</p></li>
+<li><p><b>You will be using the terminal a lot</b>: first PowerShell running as an administrator, then “normal” (unprivileged) PowerShell, and finally the WSL Linux terminal prompt.</p></li>
 </ul>
 
 
@@ -34,7 +34,7 @@ This is required by Keybase (see below), and therefore the suitcase doesn't supp
 1. If `VERSION` says 2, you are all set; skip to the next paragraph
 1. Delete your v1 instance: <pre>wsl --unregister Ubuntu-20.04</pre>
 1. Change default version to 2: <pre>wsl --set-default-version 2</pre>
-1. Continue reading
+1. Reinstall Linux (i.e. continue reading)
 
 ### Install Ubuntu 20.04 LTS from the Microsoft Store
 
@@ -66,11 +66,12 @@ The following steps will let you use the same agent (and therefore, the same key
 
 
 1. Open a “normal” (unprivileged) PowerShell session and ensure you have the `ssh` command available. If not, [follow the official instructions](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse#installing-openssh-with-powershell).
-1. Create a public / private key pair or export the one you were previously using (e.g. with PuTTY / WinSCP) and save it in a `.ssh` directory under your Windows® home directory
-   - If you never had a public key or don't know what an ssh public key is, just open an unprivileged PowerShell session, type <pre>ssh-keygen</pre> and follow the instructions
+1. Create a public / private key pair or export / import the one you were previously using (e.g. with PuTTY / WinSCP) and save it in a `.ssh` directory under your Windows® home directory
+   - If you never had a public key or don't know what an ssh public key is, just use your unprivileged PowerShell session, type<pre>ssh-keygen</pre> and follow the instructions
    - If you were using PuTTY previously and you already have a private / public key in PuTTY / Pageant, you will need to export it into your `.ssh` directory in Windows®. [Follow the instructions here.](https://aws.amazon.com/premiumsupport/knowledge-center/convert-pem-file-into-ppk/)
-   - Pick a UNIX server you have access to and copy your public key onto it: from the unprivileged PowerShell session you opened previously, type <pre>ssh-copy-id <i>USER</i>@</i>UNIXSERVER</i></pre>
-   - Type the exact same command once more. If you were successful, you won't be prompted for a password this time around. (Although, as mentioned above, you might still get prompted for your private key's passphrase.)
+   - If you already have a public / private key pair in the correct (OpenSSH) format (e.g. the one you use from another Linux computer or VM), copy them over into a `.ssh` directory directly inside your Windows® home directory
+1. Pick a UNIX server you have access to, and copy your public key onto it to try out this new authentication method: from the unprivileged PowerShell session you opened previously, type (after changing the italicized parts as is suitable for your situation) <pre>ssh-copy-id <i>USER</i>@<i>UNIXSERVER</i></pre>
+1. Type the exact same command once more. If you were successful, you won't be prompted for a password this time around. (Although, as mentioned above, you might still get prompted for your private key's passphrase.)
 
 💡 If the remote UNIX server already knew about your public key (for instance, because you already did the required changes back when you were setting up PuTTY), you might succeed at password-less authentication the first time around. That's obviously fine, and indicates success just as well. Please proceed to the next paragraph.
 
@@ -79,7 +80,7 @@ The following steps will let you use the same agent (and therefore, the same key
 
 | 🎯 Goal for this paragraph |
 |-----|
-| You know you are done with this step when (still from an unprivileged PowerShell session) you can type<pre>ssh-add -l</pre> and your public key's details are shown; **and** it happens again after you reboot and log back in. |
+| You know you are done with this step when (still from an unprivileged PowerShell session) you can type<pre>ssh-add -l</pre> and your public key's details are shown; **and** it happens again after you log out from Windows® and back in. |
 
 
 💡 We'll be using Windows® 10's `ssh-agent` — **The Pageant ssh agent is not helpful for WSL.** Been there, tried that. Sorry.
@@ -96,18 +97,18 @@ Start-Service ssh-agent
 
 | 🎯 Goal for this paragraph |
 |-----|
-| You know you are done with this step when <pre>ssh-add -l</pre> works from a WSL Linux command-line prompt like it does in PowerShell, **and** that too survives a reboot. |
+| You know you are done with this step when <pre>ssh-add -l</pre> works from a WSL Linux command-line prompt like it does in PowerShell, **and** that too survives a logout / login. |
 
 This part is not supported by Microsoft (yet) and therefore requires using a third-party piece of software aptly named [wsl-ssh-agent](https://github.com/rupor-github/wsl-ssh-agent), along with a special-purpose script that the Ansible suitcase provides.
 
 1. Head over to the [latest release](https://github.com/rupor-github/wsl-ssh-agent/releases/latest) and download the Zip file there (you won't need the source code)
 1. Extract the Zip file somewhere on the Windows® side and take note of where you installed the contents
-1. Download the [script that Ansible suitcase provides](https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/windows/setup-wsl-ssh-agent.sh) for this purpose (browse the link, right-click, Save as...), and save it in the very same directory where you extracted wsl-ssh-agent previously (alongside `wsl-ssh-agent-gui` and `npiprelay`)
+1. Download the [helper script that Ansible suitcase provides](https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/windows/setup-wsl-ssh-agent.sh) for the purpose of setting up a shared ssh agent (browse the link, right-click, Save as...), and save it in the very same directory where you extracted wsl-ssh-agent previously (alongside `wsl-ssh-agent-gui` and `npiprelay`)
 1. Run the `wsl-ssh-agent-gui` program, which should appear as a key chain icon in your system tray
 1. Ensure that that same program automatically runs again when you log out and back in (follow [these instructions from Microsoft](https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd) if you have never done that before — TL;DR: Windows-R; `shell:startup`; an Explorer window pops up; Alt+drag or otherwise create a link to `wsl-ssh-agent-gui` there)
 1. Test that last part by logging out of Windows® and back in; the key chain icon should be back in your system tray
-1. Open a Linux command-line terminal and execute the suitcase script from within it with `bash`. You will have to convert the Windows® path to a Linux path; so for example, if you installed `wsl-ssh-agent-gui` (and the script) into `C:\Users\Paul\MyStuff\wsl-ssh-agent`, you need to type<pre>bash /mnt/c/Users/Paul/MyStuff/wsl-ssh-agent/setup-wsl-ssh-agent.sh</pre> 💡 You can type in the first few characters of each directory name along that path, then press the Tab key to have the Linux shell guess the remainder on your behalf. This feature is called [command-line completion](https://en.wikipedia.org/wiki/Command-line_completion).
-1. Control with <pre>ssh-add -l</pre> This should still work if you log out and back in.
+1. Open a Linux command-line terminal and execute the suitcase script you just downloaded, using `bash`. You will have to convert the Windows® path to a Linux path; so for example, if you installed `wsl-ssh-agent-gui` (and the script) into `C:\Users\Paul\MyStuff\wsl-ssh-agent`, you need to type<pre>bash /mnt/c/Users/Paul/MyStuff/wsl-ssh-agent/setup-wsl-ssh-agent.sh</pre> 💡 You can type in the first few characters of each directory name along that path, then press the Tab key to have the Linux shell guess the remainder on your behalf. This feature is called [command-line completion](https://en.wikipedia.org/wiki/Command-line_completion). You will find it especially helpful if the path contains directories with spaces in their names.
+1. Control with <pre>ssh-add -l</pre> from the Linux world. This should still work if you log out and back in from your Windows® session.
 
 ## Keybase for WSL
 
@@ -120,15 +121,13 @@ Most projects that use the Ansible suitcase, also require Keybase as a way to ex
 1. Review the [instructions in the main users guide](../USERS-GUIDE.md#keybase) to get Keybase going within the Windows® world, and preferably also another, physically distinct device (e.g., your phone)
 1. Install Keybase within WSL: run a WSL Linux terminal and type<pre>
 curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb
-sudo dpkg -i keybase_amd64.deb
- ## You can safely ignore  errors at this step, as the next two lines are intent on fixing them up
+sudo dpkg -i keybase_amd64.deb</pre>💡 You can safely ignore  errors at this step, as the next two lines are intent on fixing them up. Moving right along:<pre>
 sudo apt -y update
-sudo apt -yf install
-</pre>
+sudo apt -yf install</pre>
 1. Run Keybase by typing <pre>run_keybase</pre>
 1. Log into your Keybase account with <pre>keybase login</pre>
 1. When prompted for a device name, **be sure to use a versioning suffix** because you won't be able to re-use the name in case you decide to destroy and recreate your WSL instance; for instance, type something like `mycorppc12345-WSL2-1`
-1. You can ignore the freedesktop business in yellow (caused by there not being a GUI on your WSL Linux)
+1. You can ignore the freedesktop error message in yellow (caused by there not being a GUI on your WSL Linux)
 1. When Keybase says you are logged in, double check with <pre>ls /keybase/team/</pre>
 
 ## Congratulations!

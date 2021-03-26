@@ -54,6 +54,6 @@ A lot of the projects which use the Ansible suitcase also rely on Keybase to exc
 
 ## Try it!
 
-Within the directory you just checked out using Git, there should be an executable script whose name ends with `*sible`. Run it with `--check` to get a glimpse of all it can do for you.
+Within the directory you just checked out using Git, there should be an executable script whose name ends with `*sible`. Run it with `--check` to get a glimpse of what it can do for you.
 
 Now get in touch with the team to learn about tags, `--prod` and other do's and don'ts.
