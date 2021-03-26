@@ -129,6 +129,18 @@ sudo apt -yf install</pre>
 1. When prompted for a device name, **be sure to use a versioning suffix** because you won't be able to re-use the name in case you decide to destroy and recreate your WSL instance; for instance, type something like `mycorppc12345-WSL2-1`
 1. You can ignore the freedesktop error message in yellow (caused by there not being a GUI on your WSL Linux)
 1. When Keybase says you are logged in, double check with <pre>ls /keybase/team/</pre>
+1. You're almost there... but if you log out from Windows® and then back in now, you will have to run `run_keybase` by hand again. You can either deal with that extra hassle (for the time being), or perform a pro UNIX admin move and **have a script do it for you**:
+   1. Type <pre>nano .profile</pre> 💡 Some explanations:
+      - `nano` is a text editor for the terminal, [easy to learn](https://www.nano-editor.org/dist/latest/cheatsheet.html) (well, at least, [easier](https://vim.rtorr.com/) [than](https://www.gnu.org/software/emacs/refcards/pdf/refcard.pdf) [others](https://raymii.org/s/tutorials/ed_cheatsheet.html))
+      - `.profile` is your shell's configuration file, which is actually a script (your UNIX shell, being simultaneously a [shell](https://en.wikipedia.org/wiki/Shell_(computing)) and a scripting language, is fully programmable)
+   1. Move all the way to the bottom of the file using the arrow or Page Down keys
+   1. Add a final line that reads <pre>run_keybase > /dev/null</pre> 💡 where
+      - `run_keybase` is the command you already know,
+      - `/dev/null` is the [null device](https://en.wikipedia.org/wiki/Null_device), meaning that any output from `run_keybase` (that is, the ASCII-art squirrel) is to be discarded. (You would still see the error messages, if any, because `>` redirects the [standard output](https://en.wikipedia.org/wiki/Standard_streams) but not the standard error.)
+   1. Press Control-X to exit (also visible in the three help lines at the bottom of the screen — ^ means the Control key)
+   1. Be sure to confirm save with Y, and leave the `File Name to Write:` to its default value (you would only want to change that if you wanted to make an edited copy of the file, rather than update the original). Press Enter to confirm and exit nano
+   1. Log out and then back into your Windows® workstation (to ensure that the [WSL lightweight virtual machine](https://docs.microsoft.com/en-us/windows/wsl/compare-versions) gets restarted)
+   1. Open a Linux command-line window again, and check that Keybase now works “hands-free”: <pre>ls /keybase/team/</pre>
 
 ## Congratulations!
 
