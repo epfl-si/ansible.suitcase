@@ -117,7 +117,7 @@ This part is not supported by Microsoft (yet) and therefore requires using a thi
 
 Most projects that use the Ansible suitcase, also require Keybase as a way to exchange secrets among DevOps team members.
 
-1. Review the [instructions in the main README](../README.md#keybase) to get Keybase going within the Windows® world, and preferably also another, physically distinct device (e.g., your phone)
+1. Review the [instructions in the main users guide](../USERS-GUIDE.md#keybase) to get Keybase going within the Windows® world, and preferably also another, physically distinct device (e.g., your phone)
 1. Install Keybase within WSL: run a WSL Linux terminal and type<pre>
 curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb
 sudo dpkg -i keybase_amd64.deb
@@ -135,4 +135,4 @@ sudo apt -yf install
 
 Wow! That's an achievement which carries a lot of command-line XP points (no pun intended on the XP part). Pat yourself on the back and enjoy your newly-minted superpowers.
 
-## [Back to the main README](../README.md)
+## [Back to the main users guide](../USERS-GUIDE.md)
