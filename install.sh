@@ -3,6 +3,10 @@
 # Pure Bourne-shell script to install Ansible and the EPFL-SI devops
 # tool suite into a self-contained directory
 #
+# Depending on the specifics, installing a compiler toolchain may be
+# required (and also depending on the specifics, install.sh can help
+# with that task)
+#
 # Environment variables:
 #
 # $SUITCASE_DIR (mandatory)     Where to install the goods to
@@ -315,31 +319,39 @@ ensure_cc () {
 }
 
 ensure_python_build_deps () {
-    local failed missing_packages
+    local missing_packages install_command
 
     case "$(uname -s)" in
         Linux)
             # https://github.com/saghul/pythonz#before-installing-python-versions-via-pythonz
             case "$(lsb_release -s -i)" in
                 Ubuntu|Debian)
+                    install_command="apt install"
                     for pkg in build-essential zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat1-dev libpcap-dev liblzma-dev libpcre3-dev libffi-dev; do
                         if ! dpkg --get-selections |cut -f1|grep $pkg; then
-                            failed="Please install missing packages using apt-get: "
                             missing_packages="$missing_packages $pkg"
                         fi
                     done ;;
                 RedHat*|CentOS*)
+                    install_command="yum install"
                     for pkg in zlib-devel bzip2-devel openssl-devel readline-devel ncurses-devel sqlite-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel libffi-devel; do
                         if ! rpm -q $pkg; then
-                            failed="Please install missing packages using yum or dnf: "
                             missing_packages="$missing_packages $pkg"
                         fi
                     done;;
             esac ;;
     esac
-    if [ -n "$failed" ]; then warn "$failed $missing_packages"; fi
+    if [ -n "$missing_packages" ]; then
+        if [ -n "$install_command" ]; then
+            warn "Please confirm running the following command to install missing build dependencies:"
+            if ! confirm_sudo $install_command $missing_packages; then
+                fatal "Please install the missing packages by hand: $missing_packages"
+            fi
+        else
+            fatal "Please install the missing packages: $missing_packages"
+        fi
+    fi
     ensure_cc
-    if [ -n "$failed" ]; then exit 1; fi
 }
 
 # On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
@@ -350,6 +362,31 @@ ensure_ruby_build_deps () {
                 echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
                 exit 1
             fi ;;
+    esac
+}
+
+confirm_sudo() {
+    if [ ! -t 0 ]; then
+        fatal <<PLEASE_RUN_IT_YOURSELF
+Please run the following command to proceed:
+
+  sudo $@
+
+PLEASE_RUN_IT_YOURSELF
+    fi
+
+    warn <<PROMPT
+Please confirm running the following command:
+
+  sudo $@
+
+Confirm [yN]?
+PROMPT
+
+    local answer
+    case "$(read answer)" in
+        y*|Y*) sudo "$@" ;;
+        *) return 1 ;;
     esac
 }
 
