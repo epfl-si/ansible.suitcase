@@ -83,7 +83,7 @@ The following steps will let you use the same agent (and therefore, the same key
 Set-Service -StartupType Automatic ssh-agent
 Start-Service ssh-agent
 </pre>⚠ Mind the order of the commands (some tutorials on the Internet have it wrong)
-2. Type <pre>ssh-add</pre> If you did the previous step right, this command will find your private key at the default place and prompt for your passphrase. If your private key is somewhere else, no biggie, just pass on the full path to `ssh-add`, e.g. <pre>ssh-add C:\Path\To\Your\id_rsa</pre>
+2. Type <pre>ssh-add</pre> If you did the previous steps right, this command will find your private key at the default place and prompt for your passphrase. If your private key is somewhere else, no biggie, just pass on the full path to `ssh-add`, e.g. <pre>ssh-add C:\Path\To\Your\id_rsa</pre>
 3. Control with <pre>ssh-add -l</pre> This should show your public key's details, including its cryptographic fingerprint (a string of gibberish that starts with `SHA256:`)
 4. ... There is no step 4. Unlike what happens on Mac OS or Linux, Windows®'s `ssh-add` is a *persistent* operation; that is, your passphrase was stored into the operating system's password store and will be retrieved to load your key again transparently the next time you log in.
 
