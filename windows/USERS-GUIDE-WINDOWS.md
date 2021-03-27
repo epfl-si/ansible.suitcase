@@ -2,15 +2,9 @@
 
 ## Pre-prerequisites
 
-<ul>
-<li><p><b>The instructions therein require Windows® 10 or later.</b></p>
-
-<p>It may or may not be technically possible to run the Ansible suitcase on Windows® 7. Unfortunately this requires some serious arcana with names such as <a href="https://chocolatey.org/">chocolatey</a>, <a href="https://chocolatey.org/packages/git">git bash</a> and <a href="https://chocolatey.org/packages/python3">python3</a>. <b>Also, this mode of operating the suitcase is untested and unmaintained</b>. Kindly consider upgrading to Windows® 10 instead.</p></li>
-
-<li><p><b>You need administrator access to the Windows® machine you will be working from.</b></p>
-
-<li><p><b>You will be using the terminal a lot</b>: first PowerShell running as an administrator, then “normal” (unprivileged) PowerShell, and finally the WSL Linux terminal prompt.</p></li>
-</ul>
+- **The instructions therein require Windows® 10 or later.**<br/>It may or may not be technically possible to run the Ansible suitcase on Windows® 7. Unfortunately this requires teaching yourself some serious arcana about things named [chocolatey](https://chocolatey.org/) and [git bash](https://chocolatey.org/packages/git), as well as the vagaries of building either [Ruby](https://stackify.com/install-ruby-on-windows-everything-you-need-to-get-going/) or [Python](https://github.com/pyenv-win/pyenv-win) on Windows®. Long story short, **this usage of the suitcase is untested and unmaintained**. Kindly consider upgrading to Windows® 10 instead.
+- **You need administrator access to the Windows® machine you will be working from.**
+- **You will be using the terminal a lot**: first PowerShell running as an administrator, then “normal” (unprivileged) PowerShell, and finally the WSL Linux terminal prompt.
 
 
 ## Install and set up WSL
