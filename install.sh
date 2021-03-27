@@ -279,7 +279,7 @@ ensure_eyaml () {
 }
 
 ensure_keybase () {
-    if [ -d /keybase ]; then
+    if [ -d /keybase/team/ ]; then
         satisfied keybase
         return
     fi
