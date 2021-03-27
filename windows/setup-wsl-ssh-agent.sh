@@ -16,6 +16,31 @@ fatal () {
     exit 1
 }
 
+confirm_sudo() {
+    if [ ! -t 0 ]; then
+        fatal <<PLEASE_RUN_IT_YOURSELF
+Please run the following command to proceed:
+
+  sudo $@
+
+PLEASE_RUN_IT_YOURSELF
+    fi
+
+    warn <<PROMPT
+Please confirm running the following command:
+
+  sudo $@
+
+Confirm [yN]?
+PROMPT
+
+    local answer
+    case "$(read answer)" in
+        y*|Y*) sudo "$@" ;;
+        *) return 1 ;;
+    esac
+}
+
 ## Example uname's (as of March 2021):
 ##
 ## WSL v1: `uname -r` -> 4.4.0-18362-Microsoft
@@ -49,12 +74,20 @@ CANNOT_FIND_NPIPERELAY
 ensure_socat() {
     if which socat >/dev/null 2>&1; then return 0; fi
 
-    # You did install Ubuntu as the documentation told you, right?
-    (
-        set -x
-        sudo apt -qy update
-        sudo apt -qy install socat
-    )
+    case "$(lsb_release -s -i)" in
+        Ubuntu|Debian)
+            (
+                set -x
+                confirm_sudo apt -qy update
+                confirm_sudo apt -qy install socat
+            ) ;;
+        RedHat*|CentOS*)
+            (
+                # UNTESTED
+                set -x
+                confirm_sudo yum install socat
+            ) ;;
+    esac
 }
 
 ensure_ssh_add() {
