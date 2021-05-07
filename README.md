@@ -33,7 +33,7 @@ where
 * [elasticsible](https://github.com/epfl-si/search_inside/blob/main/ansible/elasticsible)
 * [elsible](https://gitlab.epfl.ch/cangiani/esign-ops/-/blob/master/elsible)
 * [exportsible](https://github.com/epfl-si/infoscience-exports/blob/master/ansible/exportsible)
-* [fosrsible](https://github.com/epfl-si/idevfsd.foreman/blob/master/foresible)
+* [foresible](https://github.com/epfl-si/idevfsd.foreman/blob/master/foresible)
 * [gitsible](https://gitlab.com/epfl-idevfsd/gitlab-docker/-/blob/master/ansible/gitsible)
 * [gosible](https://gitlab.com/epfl-idevfsd/go-epfl/-/blob/feature/gosible/ansible/gosible)
 * [isasible](https://github.com/epfl-si/isa-monitoring/blob/master/ansible/isasible)
