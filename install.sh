@@ -53,7 +53,17 @@
 # - Keybase - The script will test for it (unless $SUITCASE_NO_KEYBASE is set),
 #   but obviously will not install it in your stead.
 
-: ${SUITCASE_PYTHON_VERSION:=3.7.7}
+if [ -z "$SUITCASE_PYTHON_VERSIONS" ]; then
+    if [ -n "$SUITCASE_PYTHON_VERSION" ]; then
+        SUITCASE_PYTHON_VERSIONS="$SUITCASE_PYTHON_VERSION"
+    else
+        # As of May 25th, 2021:
+        #
+        # - 3.8.5 is the latest version on Ubuntu 20.04 (Focal)
+        # - 3.8.2 is the latest version on Mac OS X 11.3.1 (20E241) (Big Sur)
+        SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2"
+    fi
+fi
 : ${SUITCASE_ANSIBLE_VERSION:=2.9.6}
 : ${SUITCASE_RUBY_VERSION:=2.6.3}
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
@@ -193,21 +203,49 @@ run_pyenv () {
         "$SUITCASE_DIR"/pyenv/bin/pyenv "$@"
 }
 
+check_python3_version () {
+    check_version python "$("$SUITCASE_DIR"/bin/python3 --version | sed 's/Python //')"
+}
+
 ensure_python3 () {
+    ensure_dir "$SUITCASE_DIR/python"
+    ensure_dir "$SUITCASE_DIR/bin"
+
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
+
+        # Prefer already-installed version, if available
+        for already_installed in /usr/local/bin/python3 /usr/bin/python3; do
+            if [ -x "$already_installed" ]; then
+                version="$($already_installed --version 2>&1)"
+                case "$version" in
+                    Python*)
+                        version="$(echo "$version" |sed 's/Python //')" ;;
+                    *) continue ;;
+                esac
+                for expected_version in $SUITCASE_PYTHON_VERSIONS; do
+                    if [ "$version" = "$expected_version" ]; then
+                        ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
+                        ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
+                        check_python3_version
+                        return 0
+                    fi
+                done
+            fi
+        done
+
+        # System-provided Python 3 is absent or unsuitable; download one
         ensure_python_build_deps
         ensure_pyenv
-        local version="${SUITCASE_PYTHON_VERSION}"
+        local version="$(set -- $SUITCASE_PYTHON_VERSIONS; echo "$1")"
         if ! run_pyenv versions |grep -w "$version"; then
             run_pyenv install "$version"
         fi
 
         ensure_symlink "pyenv/versions/$version" "$SUITCASE_DIR"/python
-        ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
 
-    check_version python "$("$SUITCASE_DIR"/bin/python3 --version | sed 's/Python //')"
+    check_python3_version
 }
 
 ensure_pip () {
