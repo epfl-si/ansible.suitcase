@@ -25,8 +25,8 @@
 # $SUITCASE_ANSIBLE_REQUIREMENTS  If set, shall point to a requirements.yml
 #                                 file
 #
-# $SUITCASE_NO_KEYBASE            If set, don't check for Keybase, and don't
-#                                 attempt to install eyaml nor its dependencies
+# $SUITCASE_NO_KEYBASE            If set, don't check for Keybase
+# $SUITCASE_NO_EYAML              If set, don't attempt to install eyaml nor its dependencies
 #
 # Directory layout under $SUITCASE_DIR:
 #
@@ -94,6 +94,8 @@ main () {
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
       ensure_keybase || unsatisfied keybase
+    fi
+    if [ -z "$SUITCASE_NO_EYAML" ]; then
       case "$unsatisfied" in
           ruby|"ruby "*|*" ruby"|*" ruby "*)
               warn "No Ruby available; skipping eyaml installation" ;;
