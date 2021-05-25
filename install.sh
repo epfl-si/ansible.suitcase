@@ -11,10 +11,13 @@
 #
 # $SUITCASE_DIR (mandatory)     Where to install the goods to
 #
-# $SUITCASE_PYTHON_VERSION
-# $SUITCASE_ANSIBLE_VERSION       The precise versions to use for the
-#                                 requirement stack to use.
-#                                 (Reasonable defaults are provided)
+# $SUITCASE_PYTHON_VERSIONS     A list of acceptable Python versions
+#                               to use. (A reasonable default value is
+#                               provided, which will try and make use of
+#                               the system-distributed Python 3)
+#
+# $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
+#                                 (A reasonable default value is provided)
 #
 # $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
 #                                 (separated with spaces)
