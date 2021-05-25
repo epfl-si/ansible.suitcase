@@ -301,11 +301,13 @@ ensure_pip_dep () {
 ensure_ansible () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}"
+        ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
         ensure_dir "$SUITCASE_DIR/bin"
-        ensure_symlink ../python/bin/ansible "$SUITCASE_DIR/bin/"
-        ensure_symlink ../python/bin/ansible-playbook "$SUITCASE_DIR/bin/"
-        ensure_symlink ../python/bin/ansible-galaxy "$SUITCASE_DIR/bin/"
+        for executable in ansible ansible-playbook ansible-galaxy; do
+            sed -e "1 s|.*|#!$SUITCASE_DIR/bin/python3|" < "$SUITCASE_DIR"/python-libs/bin/$executable \
+                > "$SUITCASE_DIR/bin/$executable"
+            chmod a+x "$SUITCASE_DIR/bin/$executable"
+        done
     fi
 
     check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
