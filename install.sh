@@ -253,6 +253,10 @@ ensure_python3 () {
     check_python3_version
 }
 
+site_packages_dir () {
+    (cd /
+     echo "$SUITCASE_DIR"/python-libs/lib/python*/site-packages)
+}
 
 ensure_pip () {
     ensure_python3
@@ -261,14 +265,14 @@ ensure_pip () {
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
-        env "$SUITCASE_DIR"/python/bin/pip3 install -t "$SUITCASE_DIR/python-libs/lib/python/site-packages" pip
+        env "$SUITCASE_DIR"/python/bin/pip3 install -t "$(site_packages_dir)" pip
     fi
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages:
+export PYTHONPATH="$SUITCASE_DIR"/$(site_packages_dir):
 export PYTHONUSERBASE="$SUITCASE_DIR"/python-libs
-exec "$SUITCASE_DIR"/python-libs/lib/python/site-packages/bin/pip3 "\$@"
+exec "$SUITCASE_DIR"/$(site_packages_dir)/bin/pip3 "\$@"
 
 PIP_WRAPPER
     chmod a+x "$SUITCASE_DIR"/bin/pip3
@@ -303,7 +307,7 @@ ensure_ansible () {
             cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages:
+export PYTHONPATH="$SUITCASE_DIR"/$(site_packages_dir):
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
 ANSIBLE_CMD_WRAPPER
             chmod a+x "$SUITCASE_DIR/bin/$executable"
