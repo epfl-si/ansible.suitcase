@@ -229,13 +229,8 @@ ensure_python3 () {
                 for expected_version in $SUITCASE_PYTHON_VERSIONS; do
                     if [ "$version" = "$expected_version" ]; then
                         ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
-                        cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON_WRAPPER
-#!/bin/sh
+                        ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs
-exec $already_installed "\$@"
-PYTHON_WRAPPER
-                        chmod a+x "$SUITCASE_DIR"/bin/python3
                         check_python3_version
                         return 0
                     fi
@@ -309,8 +304,12 @@ ensure_ansible () {
         ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
         ensure_dir "$SUITCASE_DIR/bin"
         for executable in ansible ansible-playbook ansible-galaxy; do
-            sed -e "1 s|.*|#!$SUITCASE_DIR/bin/python3|" < "$SUITCASE_DIR"/python-libs/bin/$executable \
-                > "$SUITCASE_DIR/bin/$executable"
+            cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
+#!/bin/sh
+
+export PYTHONPATH="$SUITCASE_DIR"/python-libs
+exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
+ANSIBLE_CMD_WRAPPER
             chmod a+x "$SUITCASE_DIR/bin/$executable"
         done
     fi
