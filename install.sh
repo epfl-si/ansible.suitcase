@@ -260,19 +260,15 @@ ensure_pip () {
     # However, we want to upgrade it first e.g. because of
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
-        "$SUITCASE_DIR"/python/bin/pip3 install -t "$SUITCASE_DIR/python-libs" pip
+        # Older pip3's don't honor PYTHONUSERBASE. Lame
+        env "$SUITCASE_DIR"/python/bin/pip3 install -t "$SUITCASE_DIR/python-libs/lib/python/site-packages" pip
     fi
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs
-case "\$1" in
-     install)
-       shift
-       exec "$SUITCASE_DIR"/python-libs/bin/pip3 install -t "$SUITCASE_DIR"/python-libs "\$@" ;;
-     *)
-       exec "$SUITCASE_DIR"/python-libs/bin/pip3 "\$@" ;;
-esac
+export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages
+export PYTHONUSERBASE="$SUITCASE_DIR"/python-libs
+exec "$SUITCASE_DIR"/python-libs/lib/python/site-packages/bin/pip3 "\$@"
 
 PIP_WRAPPER
     chmod a+x "$SUITCASE_DIR"/bin/pip3
@@ -307,7 +303,7 @@ ensure_ansible () {
             cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs
+export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
 ANSIBLE_CMD_WRAPPER
             chmod a+x "$SUITCASE_DIR/bin/$executable"
