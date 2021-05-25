@@ -281,15 +281,8 @@ PIP_WRAPPER
 }
 
 ensure_pip_deps () {
-    # `cryptography` is an Ansible dependency. Try and avoid requiring
-    # OpenSSL and all its Rust jazz:
     ensure_pip_dep cryptography --prefer-binary
     for dep in $SUITCASE_PIP_EXTRA; do
-        case "$dep" in
-            bcrypt|passlib)
-                # Try and avoid requiring OpenSSL and all its Rust jazz
-                ensure_pip_dep cryptography --prefer-binary ;;
-        esac
         ensure_pip_dep "$dep"
     done
 }
