@@ -86,8 +86,8 @@ main () {
         fi
     fi
 
-    ensure_pip     || unsatisfied pip
-    ensure_ansible || unsatisfied ansible
+    ensure_pip_deps
+    ensure_ansible  || unsatisfied ansible
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
       ensure_keybase || unsatisfied keybase
@@ -208,7 +208,6 @@ check_python3_version () {
 }
 
 ensure_python3 () {
-    ensure_dir "$SUITCASE_DIR/python"
     ensure_dir "$SUITCASE_DIR/bin"
 
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
@@ -225,7 +224,13 @@ ensure_python3 () {
                 for expected_version in $SUITCASE_PYTHON_VERSIONS; do
                     if [ "$version" = "$expected_version" ]; then
                         ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
-                        ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
+                        cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON_WRAPPER
+#!/bin/sh
+
+export PYTHONPATH="$SUITCASE_DIR"/python-libs
+exec $already_installed "\$@"
+PYTHON_WRAPPER
+                        chmod a+x "$SUITCASE_DIR"/bin/python3
                         check_python3_version
                         return 0
                     fi
@@ -248,22 +253,62 @@ ensure_python3 () {
     check_python3_version
 }
 
+
 ensure_pip () {
     ensure_python3
+    # This is python 3; there is bound to be *a* pip in the same directory.
+    # However, we want to upgrade it first e.g. because of
+    # https://stackoverflow.com/a/67631115/435004
+    if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
+        "$SUITCASE_DIR"/python/bin/pip3 install -t "$SUITCASE_DIR/python-libs" pip
+    fi
+    cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
+#!/bin/sh
+
+export PYTHONPATH="$SUITCASE_DIR"/python-libs
+case "\$1" in
+     install)
+       shift
+       exec "$SUITCASE_DIR"/python-libs/bin/pip3 install -t "$SUITCASE_DIR"/python-libs "\$@" ;;
+     *)
+       exec "$SUITCASE_DIR"/python-libs/bin/pip3 "\$@" ;;
+esac
+
+PIP_WRAPPER
+    chmod a+x "$SUITCASE_DIR"/bin/pip3
+
+    check_version pip "$("$SUITCASE_DIR"/bin/pip3 --version | sed 's/^pip \([^ ]*\).*/\1/')"
+}
+
+ensure_pip_deps () {
+    # `cryptography` is an Ansible dependency. Try and avoid requiring
+    # OpenSSL and all its Rust jazz:
+    ensure_pip_dep cryptography --prefer-binary
     for dep in $SUITCASE_PIP_EXTRA; do
-        if "$SUITCASE_DIR"/python/bin/pip3 install "$dep"; then
-            satisfied "pip-$dep"
-        else
-            unsatisfied "pip-$dep"
-        fi
+        case "$dep" in
+            bcrypt|passlib)
+                # Try and avoid requiring OpenSSL and all its Rust jazz
+                ensure_pip_dep cryptography --prefer-binary ;;
+        esac
+        ensure_pip_dep "$dep"
     done
+}
+
+ensure_pip_dep () {
+    ensure_pip
+    install_dir="$SUITCASE_DIR/python-libs"
+    ensure_dir "$install_dir"
+    if "$SUITCASE_DIR"/bin/pip3 install "$@"; then
+        satisfied "pip-$1"
+    else
+        unsatisfied "pip-$1"
+    fi
 }
 
 ensure_ansible () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ensure_python3
-        "$SUITCASE_DIR"/python/bin/pip install ansible=="${SUITCASE_ANSIBLE_VERSION}"
+        ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}"
         ensure_dir "$SUITCASE_DIR/bin"
         ensure_symlink ../python/bin/ansible "$SUITCASE_DIR/bin/"
         ensure_symlink ../python/bin/ansible-playbook "$SUITCASE_DIR/bin/"
