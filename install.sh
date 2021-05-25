@@ -254,8 +254,11 @@ ensure_python3 () {
 }
 
 site_packages_dir () {
-    (cd /
-     echo "$SUITCASE_DIR"/python-libs/lib/python*/site-packages)
+    # TODO: this should be probed from pip / the Python interpreter instead.
+    case "$(uname -s)" in
+        Darwin) echo "$SUITCASE_DIR"/python-libs/lib/python/site-packages ;;
+        Linux) echo "$SUITCASE_DIR"/python-libs/lib/python3.8/site-packages ;;
+    esac
 }
 
 ensure_pip () {
