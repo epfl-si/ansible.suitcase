@@ -266,7 +266,7 @@ ensure_pip () {
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages
+export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages:
 export PYTHONUSERBASE="$SUITCASE_DIR"/python-libs
 exec "$SUITCASE_DIR"/python-libs/lib/python/site-packages/bin/pip3 "\$@"
 
@@ -303,7 +303,7 @@ ensure_ansible () {
             cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages
+export PYTHONPATH="$SUITCASE_DIR"/python-libs/lib/python/site-packages:
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
 ANSIBLE_CMD_WRAPPER
             chmod a+x "$SUITCASE_DIR/bin/$executable"
