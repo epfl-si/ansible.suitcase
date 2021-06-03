@@ -304,7 +304,7 @@ ensure_pip_dep () {
 ensure_ansible () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
+        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade --user -I
         ensure_dir "$SUITCASE_DIR/bin"
         for executable in ansible ansible-playbook ansible-galaxy; do
             cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
