@@ -89,7 +89,6 @@ main () {
         fi
     fi
 
-    ensure_pip_deps
     ensure_ansible  || unsatisfied ansible
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
@@ -290,6 +289,7 @@ PIP_WRAPPER
 }
 
 ensure_pip_deps () {
+    ensure_pip
     ensure_pip_dep cryptography --prefer-binary
     for dep in $SUITCASE_PIP_EXTRA; do
         ensure_pip_dep "$dep"
@@ -297,7 +297,6 @@ ensure_pip_deps () {
 }
 
 ensure_pip_dep () {
-    ensure_pip
     install_dir="$SUITCASE_DIR/python-libs"
     ensure_dir "$install_dir"
     if "$SUITCASE_DIR"/bin/pip3 install "$@"; then
@@ -308,6 +307,7 @@ ensure_pip_dep () {
 }
 
 ensure_ansible () {
+    ensure_pip_deps
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
         ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade --user -I
