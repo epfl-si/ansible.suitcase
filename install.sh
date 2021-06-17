@@ -9,12 +9,16 @@
 #
 # Environment variables:
 #
-# $SUITCASE_DIR (mandatory)     Where to install the goods to
+# $SUITCASE_DIR (mandatory)       Where to install the goods to
 #
-# $SUITCASE_PYTHON_VERSIONS     A list of acceptable Python versions
-#                               to use. (A reasonable default value is
-#                               provided, which will try and make use of
-#                               the system-distributed Python 3)
+# $SUITCASE_PYTHON_VERSIONS       A list of acceptable Python versions
+#                                 to use. (A reasonable default value is
+#                                 provided, which will try and make use of
+#                                 the system-distributed Python 3)
+#
+# $SUITCASE_RUBY_VERSIONS         A list of acceptable Ruby versions to use.
+#                                 Ignored if $SUITCASE_NO_EYAML is set.
+#                                 A reasonable default value is provided.
 #
 # $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
 #                                 (A reasonable default value is provided)
@@ -67,8 +71,22 @@ if [ -z "$SUITCASE_PYTHON_VERSIONS" ]; then
         SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2"
     fi
 fi
+
+if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
+    if [ -n "$SUITCASE_RUBY_VERSION" ]; then
+        SUITCASE_RUBY_VERSIONS="$SUITCASE_RUBY_VERSION"
+    else
+        # As of June 17th, 2021:
+        #
+        # - 2.7.3 is the latest 2.7.x version, which Ruby shall install
+        #   if neither /usr/local/bin/ruby nor /usr/bin/ruby match any of
+        #   the whitelisted versions
+        # - 2.6.3 is the latest version on Mac OS X 11.3.1 (20E241) (Big Sur)
+        SUITCASE_RUBY_VERSIONS="2.7.3 2.6.3"
+    fi
+fi
+
 : ${SUITCASE_ANSIBLE_VERSION:=2.9.6}
-: ${SUITCASE_RUBY_VERSION:=2.6.3}
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
 
 set -e
@@ -89,7 +107,7 @@ main () {
         fi
     fi
 
-    ensure_ansible  || unsatisfied ansible
+   ensure_ansible  || unsatisfied ansible
 
     if [ -z "$SUITCASE_NO_KEYBASE" ]; then
       ensure_keybase || unsatisfied keybase
@@ -338,31 +356,68 @@ ensure_rbenv () {
 }
 
 run_rbenv () {
-    env RBENV_ROOT="$SUITCASE_DIR/rbenv" "$SUITCASE_DIR/rbenv/bin/rbenv" "$@"
+    RBENV_ROOT="$SUITCASE_DIR/rbenv" \
+              GEM_HOME= GEM_PATH= "$SUITCASE_DIR/rbenv/bin/rbenv" "$@"
+}
+
+run_gem_install () {
+    local RBENV_VERSION="$(ls -1 "$SUITCASE_DIR/rbenv/versions" | head -1)"
+    RBENV_VERSION="$RBENV_VERSION" \
+                 GEM_HOME="$SUITCASE_DIR/rbenv/versions/$RBENV_VERSION" \
+                 GEM_PATH= \
+                 "$SUITCASE_DIR/rbenv/shims/gem" install "$@"
 }
 
 ensure_ruby () {
     local version="${SUITCASE_RUBY_VERSION}"
-    local targetdir="$SUITCASE_DIR/ruby"
-    if [ ! -x "$targetdir"/bin/ruby ]; then
-        ensure_ruby_build_deps
-        ensure_rbenv
-        local rbenv_version_dir="rbenv/versions/$version"
-        if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
-            run_rbenv install "$version"
-        fi
-        ensure_symlink "$rbenv_version_dir" "$SUITCASE_DIR/ruby"
+    local ensure_target="$SUITCASE_DIR"/rbenv/shims/ruby
+
+    ensure_rbenv
+
+    if [ ! -x "$ensure_target" ]; then
+        # Prefer already-installed version, if available
+        for already_installed_dir in /usr/local/bin /usr/bin; do
+            if ! [ -x "$already_installed_dir"/ruby -a -x "$already_installed_dir"/gem ]; then
+                continue
+            fi
+            local actual_version="$("$already_installed_dir/ruby" --version)"
+            for expected_version in $SUITCASE_RUBY_VERSIONS; do
+                case "$actual_version" in
+                    "ruby $expected_version"*)
+                        rbenv_system_dir="$SUITCASE_DIR"/rbenv/versions/rbenv-system
+                        ensure_dir "$rbenv_system_dir"/bin
+                        for cmd in ruby gem; do
+                            ensure_symlink  "$already_installed_dir/$cmd" "$rbenv_system_dir"/bin/$cmd
+                        done
+                        run_rbenv rehash
+                        break ;;
+                esac
+            done
+        done
     fi
 
-    check_version ruby "$("$targetdir"/bin/ruby --version | cut -d' ' -f2)"
+    if [ ! -x "$ensure_target" ]; then
+        # Looks like we have to rebuild it ourselves:
+        ensure_ruby_build_deps
+        local rbenv_version_dir="rbenv/versions/$version"
+        if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
+            local version="$(set -- $SUITCASE_RUBY_VERSIONS; echo "$1")"
+            run_rbenv install "$version"
+        fi
+    fi
+
+    check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
 }
 
 ensure_eyaml () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/eyaml")" ]; then
-        ensure_ruby 
+        ensure_ruby
 
-        "$SUITCASE_DIR/ruby/bin/gem" install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
-        ensure_symlink ../ruby/bin/eyaml "$SUITCASE_DIR/bin/"
+        run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
+        run_rbenv rehash
+
+        ensure_dir "$SUITCASE_DIR/bin"
+        ensure_symlink ../rbenv/shims/eyaml "$SUITCASE_DIR/bin/eyaml"
 
     fi
     check_version eyaml "$("$SUITCASE_DIR/bin/eyaml" --version | sed -n 's/Welcome to eyaml \([a-z0-9.-]*\).*/\1/p')"
