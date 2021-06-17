@@ -279,9 +279,9 @@ ensure_pip () {
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
 #!/bin/sh
 
-export PYTHONPATH=$(pip_install_dir):
-export PYTHONUSERBASE=$(python_user_base)
-exec $SUITCASE_DIR/bin/python3 -m pip "\$@"
+export PYTHONPATH="$(pip_install_dir):"
+export PYTHONUSERBASE="$(python_user_base)"
+exec "$SUITCASE_DIR/bin/python3" -m pip "\$@"
 
 PIP_WRAPPER
     chmod a+x "$SUITCASE_DIR"/bin/pip3
