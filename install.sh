@@ -268,6 +268,7 @@ pip_install_dir () {
 
 ensure_pip () {
     ensure_python3
+    ensure_dir "$(pip_install_dir)"
     # This is python 3; there is bound to be *a* pip in the same directory.
     # However, we want to upgrade it first e.g. because of
     # https://stackoverflow.com/a/67631115/435004
@@ -297,8 +298,6 @@ ensure_pip_deps () {
 }
 
 ensure_pip_dep () {
-    install_dir="$SUITCASE_DIR/python-libs"
-    ensure_dir "$install_dir"
     if "$SUITCASE_DIR"/bin/pip3 install "$@"; then
         satisfied "pip-$1"
     else
