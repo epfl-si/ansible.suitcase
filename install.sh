@@ -400,13 +400,20 @@ ensure_ruby () {
     fi
 
     if [ ! -x "$ensure_target" ]; then
-        # Looks like we have to rebuild it ourselves:
+        # Looks like we have to rebuild it ourselves; pick the
+        # first version in $SUITCASE_RUBY_VERSIONS.
         ensure_ruby_build_deps
-        local rbenv_version_dir="rbenv/versions/$version"
-        if [ ! -d "$SUITCASE_DIR/$rbenv_version_dir" ]; then
-            local version="$(set -- $SUITCASE_RUBY_VERSIONS; echo "$1")"
-            run_rbenv install "$version"
-        fi
+
+        local version="$(set -- $SUITCASE_RUBY_VERSIONS; echo "$1")"
+        local rbenv_version_dir="$SUITCASE_DIR/rbenv/versions/$version"
+
+        # The configure script of recent Rubies has stopped believing
+        # in linking (-L) against a directory that doesn't exist
+        # (yet). This arguably a missing feature of rbenv; in the
+        # meanwhile patch up things ourselves:
+        ensure_dir "$rbenv_version_dir/lib"
+
+        run_rbenv install "$version"
     fi
 
     check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
