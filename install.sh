@@ -294,14 +294,17 @@ ensure_pip () {
         # Older pip3's don't honor PYTHONUSERBASE. Lame
         env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
-    cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
+
+    # TODO: pyenv purports to have shims support just like rbenv does.
+    # We *may* be able to avoid rolling our own.
+    cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
 export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
 exec "$SUITCASE_DIR/bin/python3" -m pip "\$@"
 
-PIP_WRAPPER
+PIP_SHIM
     chmod a+x "$SUITCASE_DIR"/bin/pip3
 
     check_version pip "$("$SUITCASE_DIR"/bin/pip3 --version | sed 's/^pip \([^ ]*\).*/\1/')"
@@ -330,12 +333,12 @@ ensure_ansible () {
         ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade --user -I
         ensure_dir "$SUITCASE_DIR/bin"
         for executable in ansible ansible-playbook ansible-galaxy; do
-            cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_WRAPPER
+            cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_SHIM
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
-ANSIBLE_CMD_WRAPPER
+ANSIBLE_CMD_SHIM
             chmod a+x "$SUITCASE_DIR/bin/$executable"
         done
     fi
