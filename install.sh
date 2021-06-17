@@ -253,12 +253,18 @@ ensure_python3 () {
     check_python3_version
 }
 
+python_user_base () {
+    # This is something we decide, and that we try to tell Pip to obey (see
+    # ensure_pip() below);
+    echo "$SUITCASE_DIR"/python-libs
+}
+
 pip_install_dir () {
-    # TODO: this should be probed from pip / the Python interpreter instead.
-    case "$(uname -s)" in
-        Darwin) echo "$SUITCASE_DIR"/python-libs/lib/python/site-packages ;;
-        Linux) echo "$SUITCASE_DIR"/python-libs/lib/python3.8/site-packages ;;
-    esac
+    # Unlike python_user_base(), we must second-guess the suffix part.
+    # Do so like pip/_internal/locations/_distutils.py does (which is
+    # itself based on distutils.command.install from Python's standard
+    # library):
+    $SUITCASE_DIR/bin/python3 -c "import site; import re; print(re.sub(re.escape(site.USER_BASE), '''$(python_user_base)''', site.USER_SITE))"
 }
 
 ensure_pip () {
@@ -274,7 +280,7 @@ ensure_pip () {
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
-export PYTHONUSERBASE="$SUITCASE_DIR"/python-libs
+export PYTHONUSERBASE=$(python_user_base)
 exec $(pip_install_dir)/bin/pip3 "\$@"
 
 PIP_WRAPPER
