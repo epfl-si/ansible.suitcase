@@ -274,14 +274,14 @@ ensure_pip () {
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
-        env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/python/bin/pip3 install -t "$(pip_install_dir)" pip
+        env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_WRAPPER
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
 export PYTHONUSERBASE=$(python_user_base)
-exec $(pip_install_dir)/bin/pip3 "\$@"
+exec $SUITCASE_DIR/bin/python3 -m pip "\$@"
 
 PIP_WRAPPER
     chmod a+x "$SUITCASE_DIR"/bin/pip3
