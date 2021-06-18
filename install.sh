@@ -81,8 +81,9 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
         # - 2.7.3 is the latest 2.7.x version, which Ruby shall install
         #   if neither /usr/local/bin/ruby nor /usr/bin/ruby match any of
         #   the whitelisted versions
+        # - 2.7.0 is the current version on Ubuntu Focal
         # - 2.6.3 is the latest version on Mac OS X 11.3.1 (20E241) (Big Sur)
-        SUITCASE_RUBY_VERSIONS="2.7.3 2.6.3"
+        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3"
     fi
 fi
 
