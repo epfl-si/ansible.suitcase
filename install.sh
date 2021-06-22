@@ -296,8 +296,6 @@ ensure_pip () {
         env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
 
-    # TODO: pyenv purports to have shims support just like rbenv does.
-    # We *may* be able to avoid rolling our own.
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
@@ -364,10 +362,17 @@ run_rbenv () {
               GEM_HOME= GEM_PATH= "$SUITCASE_DIR/rbenv/bin/rbenv" "$@"
 }
 
+rbenv_version () {
+    ls -1 "$SUITCASE_DIR/rbenv/versions" | head -1
+}
+
+rbenv_gem_home () {
+    echo "$SUITCASE_DIR/rbenv/versions/$(rbenv_version)"
+}
+
 run_gem_install () {
-    local RBENV_VERSION="$(ls -1 "$SUITCASE_DIR/rbenv/versions" | head -1)"
-    RBENV_VERSION="$RBENV_VERSION" \
-                 GEM_HOME="$SUITCASE_DIR/rbenv/versions/$RBENV_VERSION" \
+    RBENV_VERSION="$(rbenv_version)" \
+                 GEM_HOME="$(rbenv_gem_home)" \
                  GEM_PATH= \
                  "$SUITCASE_DIR/rbenv/shims/gem" install "$@"
 }
@@ -420,16 +425,29 @@ ensure_ruby () {
     check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
 }
 
+ensure_rbenv_shim () {
+    local cmd="$1"
+
+    ensure_dir "$SUITCASE_DIR/bin"
+    local target="$SUITCASE_DIR"/bin/"$cmd"
+
+    cat > "$target" <<RBENV_CMD_SHIM
+#!/bin/sh
+
+export GEM_PATH="$(rbenv_gem_home)"
+exec "$(rbenv_gem_home)/bin/ruby" "$(rbenv_gem_home)/bin/$cmd" "\$@"
+
+RBENV_CMD_SHIM
+
+    chmod 0755 "$target"
+}
+
 ensure_eyaml () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/eyaml")" ]; then
         ensure_ruby
 
         run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
-        run_rbenv rehash
-
-        ensure_dir "$SUITCASE_DIR/bin"
-        ensure_symlink ../rbenv/shims/eyaml "$SUITCASE_DIR/bin/eyaml"
-
+        ensure_rbenv_shim eyaml
     fi
     check_version eyaml "$("$SUITCASE_DIR/bin/eyaml" --version | sed -n 's/Welcome to eyaml \([a-z0-9.-]*\).*/\1/p')"
 }
