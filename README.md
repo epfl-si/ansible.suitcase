@@ -30,6 +30,7 @@ where
 ## List of projects that use `foosible`
 
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
+* [cffsible](https://github.com/epfl-si/ticketshop.ops/blob/main/cffsible)
 * [elasticsible](https://github.com/epfl-si/search_inside/blob/main/ansible/elasticsible)
 * [elsible](https://gitlab.epfl.ch/cangiani/esign-ops/-/blob/master/elsible)
 * [exportsible](https://github.com/epfl-si/infoscience-exports/blob/master/ansible/exportsible)
@@ -39,6 +40,8 @@ where
 * [isasible](https://github.com/epfl-si/isa-monitoring/blob/master/ansible/isasible)
 * [lhdsible](https://gitlab.epfl.ch/lhd/ops/-/blob/master/lhdsible)
 * [nocsible](https://github.com/epfl-si/external-noc/blob/master/ansible/nocsible)
+* [paysible](https://github.com/epfl-si/payonline.ops/blob/master/paysible)
+* [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
 * [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
@@ -54,3 +57,7 @@ A: [Here you go.](https://github.com/epfl-si/ops.tuleap/tree/ansible-starterpack
 ### Q: How do I operate a suitcase-based project, as a DevOps engineer?
 
 A: [See USERS-GUIDE.md](USERS-GUIDE.md)
+
+### Q: Is it any good?
+
+A: [Yes.](https://news.ycombinator.com/item?id=3067434)
