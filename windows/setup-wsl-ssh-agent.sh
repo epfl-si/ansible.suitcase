@@ -35,7 +35,8 @@ Confirm [yN]?
 PROMPT
 
     local answer
-    case "$(read answer)" in
+    read answer
+    case "$answer" in
         y*|Y*) sudo "$@" ;;
         *) return 1 ;;
     esac
