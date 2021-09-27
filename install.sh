@@ -461,7 +461,7 @@ ensure_keybase () {
     unsatisfied keybase
     if [ "$(uname -s)" = "Darwin" ]; then
         for d in /Volumes/Keybase*; do
-            if -d "$d"; then
+            if ! test -d "$d"; then
                 warn <<EOF
 Keybase is installed, but the /keybase directory is not working.
 
