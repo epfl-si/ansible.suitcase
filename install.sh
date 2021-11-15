@@ -420,11 +420,11 @@ ensure_ruby () {
         ensure_dir "$rbenv_version_dir/lib"
 
         run_rbenv install "$version"
-    fi
 
-    for shim in "$SUITCASE_DIR"/rbenv/shims/*; do
-        embed_ruby_version_in_shim "$shim" "$version"
-    done
+        for shim in "$SUITCASE_DIR"/rbenv/shims/*; do
+            embed_ruby_version_in_shim "$shim" "$version"
+        done
+    fi
 
     check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
 }
