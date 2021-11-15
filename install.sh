@@ -420,20 +420,9 @@ ensure_ruby () {
         ensure_dir "$rbenv_version_dir/lib"
 
         run_rbenv install "$version"
-
-        for shim in "$SUITCASE_DIR"/rbenv/shims/*; do
-            embed_ruby_version_in_shim "$shim" "$version"
-        done
     fi
 
-    check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
-}
-
-embed_ruby_version_in_shim () {
-    local shim="$1"
-    local version="$2"
-
-    sed -i -e "2iexport RBENV_VERSION=\"$version\"" -e "/RBENV_VERSION=/d" $shim
+    check_version ruby "$(env RBENV_VERSION="$(rbenv_version)" "$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
 }
 
 ensure_rbenv_shim () {
@@ -445,6 +434,7 @@ ensure_rbenv_shim () {
     cat > "$target" <<RBENV_CMD_SHIM
 #!/bin/sh
 
+export RBENV_VERSION="$(rbenv_version)"
 export GEM_PATH="$(rbenv_gem_home)"
 exec "$(rbenv_gem_home)/bin/ruby" "$(rbenv_gem_home)/bin/$cmd" "\$@"
 
