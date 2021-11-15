@@ -379,7 +379,6 @@ run_gem_install () {
 }
 
 ensure_ruby () {
-    local version="${SUITCASE_RUBY_VERSION}"
     local ensure_target="$SUITCASE_DIR"/rbenv/shims/ruby
 
     ensure_rbenv
