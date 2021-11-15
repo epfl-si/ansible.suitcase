@@ -421,15 +421,20 @@ ensure_ruby () {
         ensure_dir "$rbenv_version_dir/lib"
 
         run_rbenv install "$version"
-
-        # Embed the setting of the RBENV_VERSION variable directly into
-        # the shims (rather than having to handle a .ruby-version file):
-        for shim in "$SUITCASE_DIR"/rbenv/shims/*; do
-            sed -i -e "2iexport RUBY_VERSION=$version" $shim
-        done
     fi
 
+    for shim in "$SUITCASE_DIR"/rbenv/shims/*; do
+        embed_ruby_version_in_shim "$shim" "$version"
+    done
+
     check_version ruby "$("$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
+}
+
+embed_ruby_version_in_shim () {
+    local shim=$1; shift
+    local version=$2; shift
+
+    sed -i -e "2iexport RUBY_VERSION=\"$version\"" -e "/RUBY_VERSION=/d" $shim
 }
 
 ensure_rbenv_shim () {
