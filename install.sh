@@ -433,7 +433,7 @@ embed_ruby_version_in_shim () {
     local shim="$1"
     local version="$2"
 
-    sed -i -e "2iexport RUBY_VERSION=\"$version\"" -e "/RUBY_VERSION=/d" $shim
+    sed -i -e "2iexport RBENV_VERSION=\"$version\"" -e "/RBENV_VERSION=/d" $shim
 }
 
 ensure_rbenv_shim () {
