@@ -431,8 +431,8 @@ ensure_ruby () {
 }
 
 embed_ruby_version_in_shim () {
-    local shim=$1; shift
-    local version=$2; shift
+    local shim="$1"
+    local version="$2"
 
     sed -i -e "2iexport RUBY_VERSION=\"$version\"" -e "/RUBY_VERSION=/d" $shim
 }
