@@ -542,7 +542,7 @@ ensure_ruby_build_deps () {
             if [ ! -f "/usr/include/readline/readline.h" ]; then
                 echo -e "\nError: Please install libreadline-dev (e.g. sudo apt-get install -y libreadline-dev)"
                 exit 1
-            fi ;;
+            fi
             if [ ! -f "/usr/include/openssl/ssl.h" ]; then
                 echo -e "\nError: Please install libssl-dev (e.g. sudo apt-get install -y libssl-dev)"
                 exit 1
