@@ -29,23 +29,31 @@ where
 
 ## List of projects that use `foosible`
 
+* [barsible](https://gitlab.epfl.ch/vpsi/barcode-catalyse.ops/-/blob/master/barsible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
+* [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
 * [cffsible](https://github.com/epfl-si/ticketshop.ops/blob/main/cffsible)
 * [elasticsible](https://github.com/epfl-si/search_inside/blob/main/ansible/elasticsible)
 * [elsible](https://gitlab.epfl.ch/cangiani/esign-ops/-/blob/master/elsible)
 * [exportsible](https://github.com/epfl-si/infoscience-exports/blob/master/ansible/exportsible)
 * [foresible](https://github.com/epfl-si/idevfsd.foreman/blob/master/foresible)
-* [gitsible](https://gitlab.com/epfl-idevfsd/gitlab-docker/-/blob/master/ansible/gitsible)
-* [gosible](https://gitlab.com/epfl-idevfsd/go-epfl/-/blob/feature/gosible/ansible/gosible)
+* [fsdteamsible](https://github.com/epfl-fsd/fsd.team/blob/master/fsdteamsible)
+* [gitsible](https://gitlab.com/epfl-isasfsd/gitlab-docker/-/blob/master/ansible/gitsible)
+* [gosible](https://gitlab.com/epfl-isasfsd/go-ops/-/blob/master/ansible/gosible)
+* [ictsible](https://github.com/ponsfrilus/ict-bot/blob/master/ops/ansible/ictsible)
 * [isasible](https://github.com/epfl-si/isa-monitoring/blob/master/ansible/isasible)
+* [juicyble](https://github.com/epfl-dojo/juice-shop-ansible/blob/master/juicyble)
+* [k3sible](https://github.com/epfl-dojo/k3s-ansible/blob/master/k3sible)
 * [lhdsible](https://gitlab.epfl.ch/lhd/ops/-/blob/master/lhdsible)
 * [nocsible](https://github.com/epfl-si/external-noc/blob/master/ansible/nocsible)
 * [paysible](https://github.com/epfl-si/payonline.ops/blob/master/paysible)
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
+* [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
 * [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
 * [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
 * [wpsible](https://github.com/epfl-si/wp-ops/blob/master/ansible/wpsible)
+* [wiki8sible](https://gitlab.com/epfl-dojo/wikijs-microk8s/-/blob/main/wiki8sible)
 
 
 ## FAQ
