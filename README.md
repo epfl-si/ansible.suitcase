@@ -1,3 +1,5 @@
+<img align="right" width="100" height="100" src="./img/ansible-suitcase.png" />
+
 # Ansible suitcase
 
 Install Ansible and its dependency stack into a temporary directory.
