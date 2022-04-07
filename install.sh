@@ -29,8 +29,16 @@
 # $SUITCASE_ANSIBLE_REQUIREMENTS  If set, shall point to a requirements.yml
 #                                 file
 #
-# $SUITCASE_NO_KEYBASE            If set, don't check for Keybase
-# $SUITCASE_NO_EYAML              If set, don't attempt to install eyaml nor its dependencies
+# $SUITCASE_WITH_KEYBASE          1 (the default) means to check for Keybase being
+#                                 present (we obviously can't just install it). 0 means
+#                                 that the calling Ansible project doesn't require Keybase.
+#
+# $SUITCASE_WITH_EYAML            1 (the default) means to install EYAML (which requires Ruby).
+#                                 0 means that the calling Ansible project doesn't require
+#                                 EYAML nor Ruby.
+#
+# $SUITCASE_NO_KEYBASE            Obsolete alias for SUITCASE_WITH_KEYBASE=0
+# $SUITCASE_NO_EYAML              Obsolete alias for SUITCASE_WITH_EYAML=0
 #
 # Directory layout under $SUITCASE_DIR:
 #
@@ -57,7 +65,7 @@
 #
 # Additional checks and requirements:
 #
-# - Keybase - The script will test for it (unless $SUITCASE_NO_KEYBASE is set),
+# - Keybase - The script will test for it (unless [ $SUITCASE_WITH_KEYBASE = 0 ]),
 #   but obviously will not install it in your stead.
 
 if [ -z "$SUITCASE_PYTHON_VERSIONS" ]; then
@@ -90,6 +98,11 @@ fi
 
 : ${SUITCASE_ANSIBLE_VERSION:=3.4.0}
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
+: ${SUITCASE_WITH_EYAML:=0}
+: ${SUITCASE_WITH_KEYBASE:=1}
+
+if [ "$SUITCASE_NO_EYAML" ]; then SUITCASE_WITH_EYAML=0; fi
+if [ -z "$SUITCASE_NO_KEYBASE" ]; then SUITCASE_WITH_KEYBASE=1; fi
 
 set -e
 
@@ -111,10 +124,10 @@ main () {
 
    ensure_ansible  || unsatisfied ansible
 
-    if [ -z "$SUITCASE_NO_KEYBASE" ]; then
+    if [ "$SUITCASE_WITH_KEYBASE" != 0 ]; then
       ensure_keybase || unsatisfied keybase
     fi
-    if [ -z "$SUITCASE_NO_EYAML" ]; then
+    if [ "$SUITCASE_WITH_EYAML" != 0 ]; then
       case "$unsatisfied" in
           ruby|"ruby "*|*" ruby"|*" ruby "*)
               warn "No Ruby available; skipping eyaml installation" ;;
