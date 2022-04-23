@@ -31,7 +31,6 @@ where
 
 ## List of projects that use `foosible`
 
-* [barsible](https://gitlab.epfl.ch/vpsi/barcode-catalyse.ops/-/blob/master/barsible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
 * [busible](https://github.com/epfl-si/businesscard.ops/blob/main/ansible/busible)
 * [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
