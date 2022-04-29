@@ -174,20 +174,8 @@ ensure_suitcase_ansible_version_set () {
             */botsible)
                 # https://github.com/SaphireVert/gitlabot/issues/10
                 SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
-            */busible)
-                # https://github.com/epfl-si/businesscard.ops/issues/1
-                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
-            */elasticsible)
-                # https://github.com/epfl-si/search_inside/issues/6
-                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
-            */exportsible)
-                # https://github.com/epfl-si/infoscience-exports/issues/131
-                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
             */ictsible)
                 # https://github.com/ponsfrilus/ict-bot/issues/55
-                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
-            */nocsible)
-                # https://github.com/epfl-si/external-noc/issues/45
                 SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
             */presensible)
                 # https://github.com/epfl-fsd/presence_bot/issues/30
