@@ -135,6 +135,8 @@ main () {
       esac
     fi
 
+    ensure_lib_sh
+
     case "$satisfied" in
         *ansible*)
             if [ -n "$SUITCASE_ANSIBLE_REQUIREMENTS" ]; then
@@ -555,6 +557,20 @@ ensure_ruby_build_deps () {
                 exit 1
             fi ;;
     esac
+}
+
+
+ensure_lib_sh () {
+    if [ -f "$SUITCASE_DIR"/lib.sh ]; then
+        satisfied libsh
+        return
+    fi
+    curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh > "$SUITCASE_DIR"/lib.sh
+    if [ -f "$SUITCASE_DIR"/lib.sh ]; then
+        satisfied libsh
+    else
+        unsatisfied libsh
+    fi
 }
 
 confirm_sudo() {
