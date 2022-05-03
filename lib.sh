@@ -45,12 +45,12 @@ ensure_tkgi () {
 
     if [ "$(kubectl config current-context 2>/dev/null)" != "$clustername" ]; then
         ensure_tkgi_command
-        read_interactive "GASPAR username" USERNAME "$(whoami)"
-        (set -x; tkgi get-kubeconfig svc0176idevfsdkt0001 \
-                      -u $USERNAME -a "$1" --ca-cert "$2")
-
-        kubectl config use-context "$clustername"
+        do_login_tkgi
     fi
+
+    case "$(kubectl get pods -n default 2>&1)" in
+        *unauthorized*) do_login_tkgi "$clustername" -a "$1" --ca-cert "$2" ;;
+    esac
 
     if [ "$(kubectl config current-context)" != "$clustername" ]; then
         fatal "Unable to retrieve credentials for $clustername"
@@ -60,6 +60,15 @@ ensure_tkgi () {
 ensure_tkgi_command () {
     which tkgi >/dev/null 2>&1 || \
         fatal 'Please install the `tkgi` command in your PATH.'
+}
+
+do_login_tkgi () {
+    local clustername="$1"; shift
+    warn "Please log in to TKGI cluster $clustername using your GASPAR credentials"
+    read_interactive "GASPAR username" USERNAME "$(whoami)"
+    tkgi get-kubeconfig "$clustername" -u $USERNAME "$@"
+
+    kubectl config use-context "$clustername"
 }
 
 ensure_oc_login () {
