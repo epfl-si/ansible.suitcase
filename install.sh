@@ -594,7 +594,11 @@ ensure_lib_sh () {
         satisfied libsh
         return
     fi
-    curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh > "$SUITCASE_DIR"/lib.sh
+
+    local suitcase_dir_quoted
+    suitcase_dir_quoted="'"$(echo "$SUITCASE_DIR" | sed "s/'/\\'/g")"'"
+    curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh | \
+        sed 's/$SUITCASE_DIR/'"$suitcase_dir_quoted"'/g' > "$SUITCASE_DIR"/lib.sh
     if [ -f "$SUITCASE_DIR"/lib.sh ]; then
         satisfied libsh
     else

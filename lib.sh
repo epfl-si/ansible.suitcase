@@ -78,7 +78,13 @@ ensure_oc_login () {
   fi
 }
 
-ensure_platform_quirks () {
+ensure_ansible_runtime () {
+    # Careful not to quote $SUITCASE_DIR, as `install.sh` will substitute it
+    # at suitcase install time:
+    export PATH=$SUITCASE_DIR/bin":$PATH"
+    export ANSIBLE_ROLES_PATH=$SUITCASE_DIR"/roles"
+    export ANSIBLE_COLLECTIONS_PATHS=$SUITCASE_DIR
+
     # https://github.com/ansible/ansible/issues/32499, https://bugs.python.org/issue35219
     case "$(uname -s)" in
         Darwin) export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES ;;
