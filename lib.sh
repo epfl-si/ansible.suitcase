@@ -92,3 +92,7 @@ playbook_flag_git_current_branch () {
         *) playbook_flags="$playbook_flags -e git_current_branch=$git_current_branch" ;;
     esac
 }
+
+playbook_flag_homedir () {
+    playbook_flags="$playbook_flags -e $1=$OLDPWD"
+}
