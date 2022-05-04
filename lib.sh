@@ -84,3 +84,11 @@ ensure_platform_quirks () {
         Darwin) export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES ;;
     esac
 }
+
+playbook_flag_git_current_branch () {
+    git_current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    case "$git_current_branch" in
+        "") : ;;
+        *) playbook_flags="$playbook_flags -e git_current_branch=$git_current_branch" ;;
+    esac
+}
