@@ -11,6 +11,9 @@
 #
 # $SUITCASE_DIR (mandatory)       Where to install the goods to
 #
+# $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
+# (mandatory)
+#
 # $SUITCASE_PYTHON_VERSIONS       A list of acceptable Python versions
 #                                 to use. (A reasonable default value is
 #                                 provided, which will try and make use of
@@ -19,9 +22,6 @@
 # $SUITCASE_RUBY_VERSIONS         A list of acceptable Ruby versions to use.
 #                                 Ignored if $SUITCASE_NO_EYAML is set.
 #                                 A reasonable default value is provided.
-#
-# $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
-#                                 (A reasonable default value is provided)
 #
 # $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
 #                                 (separated with spaces)
@@ -96,7 +96,6 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
     fi
 fi
 
-: ${SUITCASE_ANSIBLE_VERSION:=3.4.0}
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
@@ -110,6 +109,7 @@ satisfied=
 unsatisfied=
 
 main () {
+    ensure_suitcase_ansible_version_set
     ensure_git
 
     [ -n "$SUITCASE_DIR" ] || fatal "SUITCASE_DIR is not set; don't know where to install"
@@ -167,6 +167,35 @@ fatal () {
     echo >&2; echo >&2
     warn "$@"
     exit 1
+}
+
+ensure_suitcase_ansible_version_set () {
+    # https://github.com/epfl-si/ansible.suitcase/issues/7
+    if [ -z "$SUITCASE_ANSIBLE_VERSION" ]; then
+        case "/$0" in
+            */botsible)
+                # https://github.com/SaphireVert/gitlabot/issues/10
+                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
+            */ictsible)
+                # https://github.com/ponsfrilus/ict-bot/issues/55
+                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
+            */presensible)
+                # https://github.com/epfl-fsd/presence_bot/issues/30
+                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
+            */tulsible)
+                # https://github.com/epfl-si/ops.tuleap/issues/1
+                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
+            *)
+                fatal <<'PLEASE_SET_SUITCASE_ANSIBLE_VERSION'
+Please set SUITCASE_ANSIBLE_VERSION upon invoking the suitcase, e.g.
+
+curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/install.sh | \
+   SUITCASE_ANSIBLE_VERSION=3.4.0 sh -x
+      
+PLEASE_SET_SUITCASE_ANSIBLE_VERSION
+                ;;
+        esac
+    fi
 }
 
 satisfied () {

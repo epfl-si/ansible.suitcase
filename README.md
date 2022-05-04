@@ -31,7 +31,6 @@ where
 
 ## List of projects that use `foosible`
 
-* [barsible](https://gitlab.epfl.ch/vpsi/barcode-catalyse.ops/-/blob/master/barsible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
 * [busible](https://github.com/epfl-si/businesscard.ops/blob/main/ansible/busible)
 * [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
@@ -48,7 +47,7 @@ where
 * [juicyble](https://github.com/epfl-dojo/juice-shop-ansible/blob/master/juicyble)
 * [k3sible](https://github.com/epfl-dojo/k3s-ansible/blob/master/k3sible)
 * [lhdsible](https://gitlab.epfl.ch/lhd/ops/-/blob/master/lhdsible)
-* [nocsible](https://github.com/epfl-si/external-noc/blob/master/ansible/nocsible)
+* [nocsible](https://github.com/epfl-si/external-noc/blob/master/nocsible)
 * [paysible](https://github.com/epfl-si/payonline.ops/blob/master/paysible)
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
