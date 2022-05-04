@@ -37,6 +37,14 @@
 #                                 default) means that the calling Ansible project doesn't
 #                                 require EYAML nor Ruby.
 #
+# $SUITCASE_WITH_HELM             1 means to install the helm command-line tool. 0 (the
+#                                 default) means your project doesn't require
+#                                 helm or any of the `kubernetes.core.helm*`
+#                                 tasks.
+#
+# $SUITCASE_HELM_VERSION          The version of Helm to use if SUITCASE_WITH_HELM=1.
+#                                 By default, install the latest release in major version 3.
+#
 # $SUITCASE_NO_KEYBASE            Obsolete alias for SUITCASE_WITH_KEYBASE=0
 # $SUITCASE_NO_EYAML              Obsolete alias for SUITCASE_WITH_EYAML=0
 #
@@ -99,6 +107,7 @@ fi
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
+: ${SUITCASE_WITH_HELM:=0}
 
 if [ "$SUITCASE_NO_EYAML" ]; then SUITCASE_WITH_EYAML=0; fi
 if [ -z "$SUITCASE_NO_KEYBASE" ]; then SUITCASE_WITH_KEYBASE=1; fi
@@ -133,6 +142,9 @@ main () {
               warn "No Ruby available; skipping eyaml installation" ;;
           *) ensure_eyaml || unsatisfied eyaml ;;
       esac
+    fi
+    if [ "$SUITCASE_WITH_HELM" != 0 ]; then
+        ensure_helm || unsatisfied helm
     fi
 
     ensure_lib_sh
@@ -605,7 +617,7 @@ ensure_lib_sh () {
     fi
 
     local suitcase_dir_quoted
-    suitcase_dir_quoted="'"$(echo "$SUITCASE_DIR" | sed "s/'/\\'/g")"'"
+    suitcase_dir_quoted="'"$(echo "$SUITCASE_DIR" | sed "s|\(['/]\)|"'\\\1'"|g")"'"
     curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh | \
         sed 's/$SUITCASE_DIR/'"$suitcase_dir_quoted"'/g' > "$SUITCASE_DIR"/lib.sh
     if [ -f "$SUITCASE_DIR"/lib.sh ]; then
@@ -613,6 +625,39 @@ ensure_lib_sh () {
     else
         unsatisfied libsh
     fi
+}
+
+ensure_helm () {
+    local helm_args
+
+    ensure_dir "$SUITCASE_DIR/bin"
+    ensure_dir "$SUITCASE_DIR/helm"
+
+    case "$(uname -s)" in
+        Darwin)
+            helm_args="--no-sudo" ;;
+    esac
+
+    if [ -n "$SUITCASE_HELM_VERSION" ]; then
+        helm_args="$helm_args --version=$SUITCASE_HELM_VERSION"
+    fi
+
+    curl --silent https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | \
+        HELM_INSTALL_DIR="$SUITCASE_DIR/helm" \
+        PATH="$SUITCASE_DIR/helm:$PATH" \
+        bash -x -- /dev/stdin $helm_args
+
+    cat > "$SUITCASE_DIR"/bin/helm <<HELM_SHIM
+#!/bin/sh
+
+export HELM_CACHE_HOME=$SUITCASE_DIR/helm
+export HELM_CONFIG_HOME=$SUITCASE_DIR/helm
+export HELM_DATA_HOME=$SUITCASE_DIR/helm
+
+exec "$SUITCASE_DIR/helm/helm" "\$@"
+
+HELM_SHIM
+    chmod a+x "$SUITCASE_DIR"/bin/helm
 }
 
 confirm_sudo() {
