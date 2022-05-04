@@ -77,3 +77,10 @@ ensure_oc_login () {
     oc login
   fi
 }
+
+ensure_platform_quirks () {
+    # https://github.com/ansible/ansible/issues/32499, https://bugs.python.org/issue35219
+    case "$(uname -s)" in
+        Darwin) export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES ;;
+    esac
+}
