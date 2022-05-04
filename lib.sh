@@ -45,7 +45,7 @@ ensure_tkgi () {
 
     if [ "$(kubectl config current-context 2>/dev/null)" != "$clustername" ]; then
         ensure_tkgi_command
-        do_login_tkgi
+        do_login_tkgi "$clustername" -a "$1" --ca-cert "$2"
     fi
 
     case "$(kubectl get pods -n default 2>&1)" in
