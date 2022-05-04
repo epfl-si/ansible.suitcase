@@ -91,14 +91,14 @@ ensure_ansible_runtime () {
     esac
 }
 
-playbook_flag_git_current_branch () {
+ansible_flag_set_var_git_current_branch () {
     git_current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
     case "$git_current_branch" in
         "") : ;;
-        *) playbook_flags="$playbook_flags -e git_current_branch=$git_current_branch" ;;
+        *) echo "-e git_current_branch=$git_current_branch" ;;
     esac
 }
 
-playbook_flag_homedir () {
-    playbook_flags="$playbook_flags -e $1=$OLDPWD"
+ansible_flag_set_var_homedir () {
+   echo "-e $1=$OLDPWD"
 }
