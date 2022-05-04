@@ -351,6 +351,15 @@ exec "$SUITCASE_DIR/bin/python3" -m pip "\$@"
 PIP_SHIM
     chmod a+x "$SUITCASE_DIR"/bin/pip3
 
+    cat > "$SUITCASE_DIR"/bin/python3-shim <<PYTHON3_SHIM
+#!/bin/sh
+
+export PYTHONPATH="$(pip_install_dir):"
+exec "$SUITCASE_DIR/bin/python3" "\$@"
+
+PYTHON3_SHIM
+    chmod a+x "$SUITCASE_DIR"/bin/python3-shim
+
     check_version pip "$("$SUITCASE_DIR"/bin/pip3 --version | sed 's/^pip \([^ ]*\).*/\1/')"
 }
 
