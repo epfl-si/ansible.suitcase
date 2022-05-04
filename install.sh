@@ -33,9 +33,9 @@
 #                                 present (we obviously can't just install it). 0 means
 #                                 that the calling Ansible project doesn't require Keybase.
 #
-# $SUITCASE_WITH_EYAML            1 (the default) means to install EYAML (which requires Ruby).
-#                                 0 means that the calling Ansible project doesn't require
-#                                 EYAML nor Ruby.
+# $SUITCASE_WITH_EYAML            1 means to install EYAML (which requires Ruby). 0 (the
+#                                 default) means that the calling Ansible project doesn't
+#                                 require EYAML nor Ruby.
 #
 # $SUITCASE_NO_KEYBASE            Obsolete alias for SUITCASE_WITH_KEYBASE=0
 # $SUITCASE_NO_EYAML              Obsolete alias for SUITCASE_WITH_EYAML=0
