@@ -628,16 +628,10 @@ ensure_lib_sh () {
 }
 
 ensure_helm () {
-    local helm_args
-
     ensure_dir "$SUITCASE_DIR/bin"
     ensure_dir "$SUITCASE_DIR/helm"
 
-    case "$(uname -s)" in
-        Darwin)
-            helm_args="--no-sudo" ;;
-    esac
-
+    local helm_args="--no-sudo"
     if [ -n "$SUITCASE_HELM_VERSION" ]; then
         helm_args="$helm_args --version=$SUITCASE_HELM_VERSION"
     fi
