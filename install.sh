@@ -109,8 +109,8 @@ fi
 : ${SUITCASE_WITH_KEYBASE:=1}
 : ${SUITCASE_WITH_HELM:=0}
 
-if [ "$SUITCASE_NO_EYAML" ]; then SUITCASE_WITH_EYAML=0; fi
-if [ -z "$SUITCASE_NO_KEYBASE" ]; then SUITCASE_WITH_KEYBASE=1; fi
+if [ -n "$SUITCASE_NO_EYAML" ]; then SUITCASE_WITH_EYAML=0; fi
+if [ -n "$SUITCASE_NO_KEYBASE" ]; then SUITCASE_WITH_KEYBASE=1; fi
 
 set -e
 
@@ -131,7 +131,7 @@ main () {
         fi
     fi
 
-   ensure_ansible  || unsatisfied ansible
+#   ensure_ansible  || unsatisfied ansible
 
     if [ "$SUITCASE_WITH_KEYBASE" != 0 ]; then
       ensure_keybase || unsatisfied keybase
@@ -618,7 +618,8 @@ ensure_lib_sh () {
 
     local suitcase_dir_quoted
     suitcase_dir_quoted="'"$(echo "$SUITCASE_DIR" | sed "s|\(['/]\)|"'\\\1'"|g")"'"
-    curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh | \
+#    curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/lib.sh | \
+    cat ~/Dev/ops/ansible.suitcase/lib.sh | \
         sed 's/$SUITCASE_DIR/'"$suitcase_dir_quoted"'/g' > "$SUITCASE_DIR"/lib.sh
     if [ -f "$SUITCASE_DIR"/lib.sh ]; then
         satisfied libsh
