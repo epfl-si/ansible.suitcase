@@ -85,7 +85,7 @@ if [ -z "$SUITCASE_PYTHON_VERSIONS" ]; then
         # - 3.8.5 is the latest version on Ubuntu 20.04 (Focal)
         # - 3.8.2 is the old version on Mac OS X 11.3.1 (20E241) (Big Sur)
         # - 3.8.9 is the new version on Mac OS X 11.6 (20G165) (Big Sur too)
-        SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2 3.8.9"
+        SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2 3.8.9 3.8.10"
     fi
 fi
 
