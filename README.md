@@ -56,6 +56,7 @@ where
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
 * [wpsible](https://github.com/epfl-si/wp-ops/blob/master/ansible/wpsible)
 * [wiki8sible](https://gitlab.com/epfl-dojo/wikijs-microk8s/-/blob/main/wiki8sible)
+* [apprsible](https://gitlab.epfl.ch/si-idevfsd/vmapprentis-deploy/-/blob/main/ansible/apprsible)
 
 
 ## FAQ
