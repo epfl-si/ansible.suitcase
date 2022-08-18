@@ -26,6 +26,7 @@ anything as root.
 * [k3sible](https://github.com/epfl-dojo/k3s-ansible/blob/master/k3sible)
 * [lhdsible](https://gitlab.epfl.ch/lhd/ops/-/blob/master/lhdsible)
 * [nocsible](https://github.com/epfl-si/external-noc/blob/master/nocsible)
+* [ofrfsible](https://github.com/epfl-si/bill2myprint-ops/blob/main/ofrfsible)
 * [paysible](https://github.com/epfl-si/payonline.ops/blob/master/paysible)
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
