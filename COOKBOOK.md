@@ -48,7 +48,7 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 : This tells bash to apply modern error management. [See above](#preramble) about proficiency required, not 1998 anymore.
 
 ②
-: The first thing the wrapper script does is to `chdir()` into the directory it lives in, so that lines such as ⑦ below work without further ado. It is important to do so in a single `cd` command (so that if you wish to remember the caller's working directory for any reason, you can use `$OLDPWD`); and to [portably bypass any symlink shenanigans](https://stackoverflow.com/a/60625224/435004) (avoiding the use of the `realpath` command, which may not exist on vanilla Mac OS X).
+: The first thing the wrapper script does is to `chdir()` into the directory it lives in, so that lines such as ⑦ below work without further ado. It is important to do so in a single `cd` command (so that if you wish to remember the caller's working directory for any reason, you can use `$OLDPWD`); and the `cd; pwd` business [portably bypasses any symlink shenanigans](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks).
 
 ③
 : This is where you put the minimum amount of info for the intern to figure out how to use the `foosible` script. Although that is a matter of taste, keeping the `help()` function as close as possible to the top of the script will also help people who don't run unknown commands to see what they do, even with `--help`. If you wonder where the `fatal` function comes from, see ⑦.
@@ -68,7 +68,7 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 ⑧
 : ... And that's pretty much it.
 
-## A `--prod` flag
+## Add a `--prod` flag
 
 If you still don't trust Ansible enough to let the intern mess with production through it (until such time that you reveal the secret flag to them!), here's something you could do:
 
