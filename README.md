@@ -8,6 +8,7 @@ anything as root.
 
 ## List of projects that use `foosible`
 
+* [archivewebsible](https://github.com/epfl-si/homepage-archiveweb.epfl.ch/blob/master/ansible/archivewebsible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
 * [busible](https://github.com/epfl-si/businesscard.ops/blob/main/ansible/busible)
 * [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
