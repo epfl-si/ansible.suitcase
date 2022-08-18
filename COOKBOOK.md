@@ -97,3 +97,48 @@ inventories () {
   esac
 }</pre>
 4. Rearrange your Ansible inventory by splitting it into `inventory/test.yml` and `inventory/prod.yml`
+
+## Using the suitcase's Python for your local tasks
+
+If one (or more) of your inventory targets is something like a Kubernetes cluster (not a “real” host that Ansible reaches over ssh), you will probably want to use the `local` [connection plugin](https://docs.ansible.com/ansible/latest/plugins/connection.html#plugin-list), which you can do right from the `inventory.yml` file like this:
+
+```
+all:
+  hosts:
+    # Arguably not a host, but it plays one on TV
+    my-kubernetes:
+      ansible_connection: local
+```
+
+In such a case, you will want to exert control on [`ansible_python_interpreter`](https://docs.ansible.com/ansible/latest/reference_appendices/interpreter_discovery.html) so that the “remote” Python that Ansible invokes for tasks is the one inside the suitcase, it being conveniently guaranteed to have access to the `SUITCASE_PIP_EXTRA` packages (like, typically, [`kubernetes`](https://pypi.org/project/kubernetes/)):
+
+```
+all:
+  hosts:
+    # Arguably not a host, but it plays one on TV
+    my-kubernetes:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ foosible_suitcase_dir }}/bin/python3"
+```
+
+If you have INI-style inventory, and despite the lack of a text quoting feature in that case, you could make it work by squeezing out all the whitespace from inside the mustaches, like this:
+
+```
+[all]
+my-kubernetes      ansible_connection=local  ansible_python_interpreter={{foosible_suitcase_dir}}/bin/python3
+```
+
+Naturally, in both cases you will need to teach the wrapper script to pass a suitably set `foosible_suitcase_dir` variable into Ansible: either
+
+```
+ansible-playbook -i inventory.yml playbook.yml -e foosible_suitcase_dir="$PWD/ansible-deps-cache" "$@"
+```
+
+or (if you have `ansible_args` as per the previous recipe)
+
+```
+declare -a ansible_args
+ansible_args=(-e "foosible_suitcase_dir=$PWD/ansible-deps-cache")
+```
+
+should do the trick.
