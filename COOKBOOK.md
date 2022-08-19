@@ -2,7 +2,16 @@
 
 ## Preramble
 
-**Proficiency in bash shell scripting is assumed from here on below.** It is assumed you know what the closing keywords for `if` and `case` are; what `$#` or `$(foo)` mean; in which kind of (perhaps nested) quotes they do or do not work; and so on. Employing [bash arrays](https://gist.github.com/magnetikonline/0ca47c893de6a380c87e4bdad6ae5cf7) is fair game, as this is not 1998 anymore.
+**Proficiency in modern bash shell scripting is recommended.** It is assumed that you know
+- what the closing keywords for `if` and `case` are
+- what `$0`, `$#` or `$(foo)` mean
+- [how to deal with spaces and control characters](https://www.linuxjournal.com/article/10954) in file names (the TL;DR answer: use moar double quotes);
+- a few basics about [bash arrays](https://gist.github.com/magnetikonline/0ca47c893de6a380c87e4bdad6ae5cf7).
+
+Here are some resources to touch up on your skills:
+- [Good ole **bash(1)** manpage](https://linux.die.net/man/1/bash)
+- [Free eBooks](https://www.tecmint.com/free-linux-shell-scripting-books/)
+- The [superuser](https://superuser.com) and [Unix&Linux](https://unix.stackexchange.com/) Stackoverflow chapters
 
 ## Starter Kit
 
@@ -45,10 +54,10 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 ```
 
 ①
-: This tells bash to apply modern error management. [See above](#preramble) about proficiency required, not 1998 anymore.
+: This tells bash to apply [modern error management]().
 
 ②
-: The first thing the wrapper script does is to `chdir()` into the directory it lives in, so that lines such as ⑦ below work without further ado. It is important to do so in a single `cd` command (so that if you wish to remember the caller's working directory for any reason, you can use `$OLDPWD`); and the `cd; pwd` business [portably bypasses any symlink shenanigans](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks).
+: The first thing the wrapper script does is to `cd` into the directory it lives in, so that lines such as ⑦ below work without further ado. This somewhat contrived incantation is space- and control-character-resistant, as well as [symlink-resistant](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks); yet, it preserves the caller's working directory in `$OLDPWD`, should you need to look there for any reason.
 
 ③
 : This is where you put the minimum amount of info for the intern to figure out how to use the `foosible` script. Although that is a matter of taste, keeping the `help()` function as close as possible to the top of the script will also help people who don't run unknown commands to see what they do, even with `--help`. If you wonder where the `fatal` function comes from, see ⑦.
@@ -60,17 +69,17 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 : This `if` ... `fi` block is the idempotent operation that installs the suitcase by running it as a shell script downloaded from GitHub on-the-spot. That is, unless `ansible-deps-cache/.versions` already exists, which is the stamp file that the suitcase creates upon successful installation. One can configure a variety of parameters through environment variables, as documented in the comments [at the top of the suitcase's `install.sh`](./install.sh).
 
 ⑥
-: In order to use the installed suitcase, a couple of environment variables must be set, most notably `$PATH` so that the wrapper script picks up the right `ansible`, `ansible-playbook` etc. executables. The other two variables only matter for the `SUITCASE_ANSIBLE_REQUIREMENTS` feature, but it doesn't hurt to throw them in even if you don't (yet) have a [`requirements.yml` file](https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles-and-collections-from-the-same-requirements-yml-file).
+: In order to use the installed suitcase, a couple of environment variables must be set, most notably `$PATH` so that the wrapper script picks up the right `ansible`, `ansible-playbook` etc. executables. The other two variables let Ansible pick up dependencies installed using the `SUITCASE_ANSIBLE_REQUIREMENTS` feature; it doesn't hurt to have them, even if you don't (yet) have a [`requirements.yml` file](https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles-and-collections-from-the-same-requirements-yml-file).
 
 ⑦
 : The suitcase comes with [a small run-time shell library](./lib.sh) with a few handy functions such as `fatal` (but also `warn`, `read_interactive` and more), which your wrapper script may want to call.
 
 ⑧
-: ... And that's pretty much it.
+: The script transfers control to `ansible-playbook` at the end and... That's pretty much it.
 
-## Add a `--prod` flag
+## Adding a `--prod` flag
 
-If you still don't trust Ansible enough to let the intern mess with production through it (until such time that you reveal the secret flag to them!), here's something you could do:
+Maybe you still don't trust Ansible enough to let the intern mess with production through it — That is, until you, and you only, decide to reveal the secret flag to them! If so, here's something you could do:
 
 1. Teach your `foosible` wrapper to parse the command line, for instance: <pre>
 declare -a ansible_args
