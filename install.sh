@@ -86,7 +86,11 @@ if [ -z "$SUITCASE_PYTHON_VERSIONS" ]; then
         # - 3.10.4 is the latest version on Ubuntu 22.04 (Jammy)
         # - 3.8.2 is the old version on Mac OS X 11.3.1 (20E241) (Big Sur)
         # - 3.8.9 is the new version on Mac OS X 11.6 (20G165) (Big Sur too)
-        SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2 3.8.9 3.8.10 3.10.4"
+        #
+        # As of August 26th, 2022:
+        #
+        # - 3.10.6 is the latest version for Fedora 36
+        SUITCASE_PYTHON_VERSIONS="3.8.5 3.8.2 3.8.9 3.8.10 3.10.4 3.10.6"
     fi
 fi
 
