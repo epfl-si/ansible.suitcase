@@ -8,6 +8,7 @@ anything as root.
 
 ## List of projects that use `foosible`
 
+* [apprsible](https://gitlab.epfl.ch/si-idevfsd/vmapprentis-deploy/-/blob/main/ansible/apprsible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
 * [busible](https://github.com/epfl-si/businesscard.ops/blob/main/ansible/busible)
 * [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
@@ -29,11 +30,13 @@ anything as root.
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
 * [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
+* [skillsible](https://github.com/ponsfrilus/swissskills.ops/blob/main/skillsible)
 * [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
 * [wpsible](https://github.com/epfl-si/wp-ops/blob/master/ansible/wpsible)
 * [wiki8sible](https://gitlab.com/epfl-dojo/wikijs-microk8s/-/blob/main/wiki8sible)
-* [apprsible](https://gitlab.epfl.ch/si-idevfsd/vmapprentis-deploy/-/blob/main/ansible/apprsible)
+* [xaasible](https://github.com/epfl-si/xaasible-ops/blob/main/xaasible)
+
 
 
 ## FAQ
