@@ -54,7 +54,7 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 ```
 
 ①
-: This tells bash to apply [modern error management]().
+: This tells bash to apply [modern error management](http://mywiki.wooledge.org/BashFAQ/105).
 
 ②
 : The first thing the wrapper script does is to `cd` into the directory it lives in, so that lines such as ⑦ below work without further ado. This somewhat contrived incantation is space- and control-character-resistant, as well as [symlink-resistant](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks); yet, it preserves the caller's working directory in `$OLDPWD`, should you need to look there for any reason.
