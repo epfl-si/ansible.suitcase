@@ -347,8 +347,12 @@ pip_install_dir () {
 ensure_pip () {
     ensure_python3
     ensure_dir "$(pip_install_dir)"
-    # This is python 3; there is bound to be *a* pip in the same directory.
-    # However, we want to upgrade it first e.g. because of
+    if ! "$SUITCASE_DIR"/bin/python3 -m pip >/dev/null 2>&1; then
+        fatal <<EOF
+Please install Pip for Python 3 using your distribution's package manager.
+EOF
+    fi
+    # We want to upgrade pip first e.g. because of
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
