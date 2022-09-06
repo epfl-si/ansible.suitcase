@@ -3,10 +3,6 @@
 # Pure Bourne-shell script to install Ansible and the EPFL-SI devops
 # tool suite into a self-contained directory
 #
-# Depending on the specifics, installing a compiler toolchain may be
-# required (and also depending on the specifics, install.sh can help
-# with that task)
-#
 # Environment variables:
 #
 # $SUITCASE_DIR (mandatory)       Where to install the goods to
