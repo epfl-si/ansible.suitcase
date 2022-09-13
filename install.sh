@@ -364,7 +364,13 @@ EOF
 
 export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
-exec "$SUITCASE_DIR/bin/python3" -m pip "\$@"
+
+case "\$1" in
+  install|uninstall)
+    exec "$SUITCASE_DIR/bin/python3" -m pip "\$@" --user -I ;;
+  *)
+    exec "$SUITCASE_DIR/bin/python3" -m pip "\$@" ;;
+esac
 
 PIP_SHIM
     chmod a+x "$SUITCASE_DIR"/bin/pip3
@@ -401,7 +407,7 @@ ensure_ansible () {
     ensure_pip_deps
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade --user -I
+        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
         ensure_dir "$SUITCASE_DIR/bin"
         for executable in ansible ansible-playbook ansible-galaxy; do
             cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_SHIM
