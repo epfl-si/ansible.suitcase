@@ -127,27 +127,12 @@ all:
     # Arguably not a host, but it plays one on TV
     my-kubernetes:
       ansible_connection: local
-      ansible_python_interpreter: "{{ foosible_suitcase_dir }}/bin/python3"
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
 ```
 
 If you have INI-style inventory, and despite the lack of a text quoting feature in that case, you could make it work by squeezing out all the whitespace from inside the mustaches, like this:
 
 ```
 [all]
-my-kubernetes      ansible_connection=local  ansible_python_interpreter={{foosible_suitcase_dir}}/bin/python3
+my-kubernetes      ansible_connection=local  ansible_python_interpreter={{ansible_playbook_python}}
 ```
-
-Naturally, in both cases you will need to teach the wrapper script to pass a suitably set `foosible_suitcase_dir` variable into Ansible: either
-
-```
-ansible-playbook -i inventory.yml playbook.yml -e foosible_suitcase_dir="$PWD/ansible-deps-cache" "$@"
-```
-
-or (if you have `ansible_args` as per the previous recipe)
-
-```
-declare -a ansible_args
-ansible_args=(-e "foosible_suitcase_dir=$PWD/ansible-deps-cache")
-```
-
-should do the trick.
