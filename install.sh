@@ -22,6 +22,12 @@
 # $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
 #                                 (separated with spaces)
 #
+# $SUITCASE_PIP_SHIMS             Additional shell wrappers (shims) to create
+#                                 for scripts installed by Pip (under
+#                                 python-libs/bin). Wildcards are
+#                                 allowed. The default is to make shims
+#                                 for `ansible*` scripts only.
+#
 # $SUITCASE_ANSIBLE_REQUIREMENTS  If set, shall point to a requirements.yml
 #                                 file
 #
@@ -133,7 +139,11 @@ main () {
         fi
     fi
 
-    ensure_ansible  || unsatisfied ansible
+    ensure_pip_deps
+    if [ -n "$SUITCASE_PIP_SHIMS" ]; then
+        ensure_pip_shims "$SUITCASE_PIP_SHIMS"
+    fi
+    ensure_ansible || unsatisfied ansible
 
     if [ "$SUITCASE_WITH_KEYBASE" != 0 ]; then
       ensure_keybase || unsatisfied keybase
@@ -404,23 +414,26 @@ ensure_pip_dep () {
 }
 
 ensure_ansible () {
-    ensure_pip_deps
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
          ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
         ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
         ensure_dir "$SUITCASE_DIR/bin"
-        for executable in ansible ansible-playbook ansible-galaxy; do
-            cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_CMD_SHIM
+    fi
+
+    ensure_pip_shims "ansible*"
+    check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
+}
+
+ensure_pip_shims () {
+    for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
+        cat > "$SUITCASE_DIR"/bin/$executable <<PIP_SCRIPT_SHIM
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
-ANSIBLE_CMD_SHIM
-            chmod a+x "$SUITCASE_DIR/bin/$executable"
-        done
-    fi
-
-    check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
+PIP_SCRIPT_SHIM
+        chmod a+x "$SUITCASE_DIR/bin/$executable"
+    done
 }
 
 ensure_rbenv () {
