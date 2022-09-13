@@ -47,6 +47,17 @@
 # $SUITCASE_HELM_VERSION          The version of Helm to use if SUITCASE_WITH_HELM=1.
 #                                 By default, install the latest release in major version 3.
 #
+# $SUITCASE_WITH_KUBECTL          1 means to install the kubectl
+#                                 command-line tool. 0 (the default)
+#                                 means your project doesn't require
+#                                 kubectl (or any of the
+#                                 `kubernetes.core.kustomize*` tasks).
+#
+# $SUITCASE_KUBECTL_VERSION       The version of kubectl to use if
+#                                 SUITCASE_WITH_KUBECTL=1. By
+#                                 default, install the latest stable
+#                                 release.
+#
 # $SUITCASE_NO_KEYBASE            Obsolete alias for SUITCASE_WITH_KEYBASE=0
 # $SUITCASE_NO_EYAML              Obsolete alias for SUITCASE_WITH_EYAML=0
 #
@@ -116,6 +127,7 @@ fi
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
 : ${SUITCASE_WITH_HELM:=0}
+: ${SUITCASE_WITH_KUBECTL:=0}
 
 if [ -n "$SUITCASE_NO_EYAML" ]; then SUITCASE_WITH_EYAML=0; fi
 if [ -n "$SUITCASE_NO_KEYBASE" ]; then SUITCASE_WITH_KEYBASE=1; fi
@@ -155,8 +167,12 @@ main () {
           *) ensure_eyaml || unsatisfied eyaml ;;
       esac
     fi
+
     if [ "$SUITCASE_WITH_HELM" != 0 ]; then
         ensure_helm || unsatisfied helm
+    fi
+    if [ "$SUITCASE_WITH_KUBECTL" != 0 ]; then
+        ensure_kubectl || unsatisfied kubectl
     fi
 
     ensure_lib_sh
@@ -677,6 +693,28 @@ exec "$SUITCASE_DIR/helm/helm" "\$@"
 
 HELM_SHIM
     chmod a+x "$SUITCASE_DIR"/bin/helm
+}
+
+ensure_kubectl () {
+    ensure_dir "$SUITCASE_DIR/bin"
+
+    local arch="$(uname -m)"
+    case "$arch" in
+        x86_64) arch=amd64 ;;
+    esac
+
+    local os="$(uname -s | tr 'A-Z' 'a-z')"
+
+    if [ -z "$SUITCASE_KUBECTL_VERSION" ]; then
+        SUITCASE_KUBECTL_VERSION="$(curl https://storage.googleapis.com/kubernetes-release/release/stable.txt)"
+    fi
+
+    curl -o "$SUITCASE_DIR/bin/kubectl" \
+         https://storage.googleapis.com/kubernetes-release/release/"$SUITCASE_KUBECTL_VERSION"/bin/"$os"/"$arch"/kubectl
+    chmod a+x "$SUITCASE_DIR/bin/kubectl"
+    "$SUITCASE_DIR/bin/kubectl"
+
+    check_version kubectl "$("$SUITCASE_DIR"/bin/kubectl version 2>/dev/null|grep 'Client Version'|sed -n 's/.*GitVersion:"v\([^"]*\)".*/\1/p')"
 }
 
 confirm_sudo() {
