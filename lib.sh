@@ -40,19 +40,21 @@ read_interactive () {
 
 ensure_tkgi () {
     local clustername="$1"; shift
+
     export KUBECONFIG="$(suitcase_dir)/kubeconfig/kubeconfig"
+
+    # Tanzu SR 22333578705: the OIDC! It no works!!
+    case "$(python3-shim -c "import kubernetes; kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
+        *CERTIFICATE_VERIFY_FAILED*)
+            rm -rf "$KUBECONFIG" ;;
+    esac
+
     mkdir -p "$(dirname "$KUBECONFIG")" 2>/dev/null || true
 
     if [ "$(kubectl config current-context 2>/dev/null)" != "$clustername" ]; then
         ensure_tkgi_command
         do_login_tkgi "$clustername" -a "$1" --ca-cert "$2"
     fi
-
-    # Tanzu SR 22333578705: the OIDC! It no works!!
-    case "$(python3-shim -c "import kubernetes; kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
-        *CERTIFICATE_VERIFY_FAILED*)
-            rm -rf "$(suitcase_dir)/kubeconfig/kubeconfig" ;;
-    esac
 
     case "$(kubectl get pods -n default 2>&1)" in
         *unauthorized*) do_login_tkgi "$clustername" -a "$1" --ca-cert "$2" ;;
