@@ -48,6 +48,12 @@ ensure_tkgi () {
         do_login_tkgi "$clustername" -a "$1" --ca-cert "$2"
     fi
 
+    # Tanzu SR 22333578705: the OIDC! It no works!!
+    case "$(python3-shim -c "kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
+        *CERTIFICATE_VERIFY_FAILED*)
+            rm -rf "$(suitcase_dir)/kubeconfig/kubeconfig" ;;
+    esac
+
     case "$(kubectl get pods -n default 2>&1)" in
         *unauthorized*) do_login_tkgi "$clustername" -a "$1" --ca-cert "$2" ;;
     esac
