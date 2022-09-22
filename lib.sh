@@ -49,7 +49,7 @@ ensure_tkgi () {
     fi
 
     # Tanzu SR 22333578705: the OIDC! It no works!!
-    case "$(python3-shim -c "kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
+    case "$(python3-shim -c "import kubernetes; kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
         *CERTIFICATE_VERIFY_FAILED*)
             rm -rf "$(suitcase_dir)/kubeconfig/kubeconfig" ;;
     esac
