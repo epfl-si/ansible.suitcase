@@ -40,7 +40,7 @@ read_interactive () {
 
 ensure_tkgi () {
     local clustername="$1"; shift
-    export KUBECONFIG=$PWD/ansible-deps-cache/kubeconfig/kubeconfig
+    export KUBECONFIG="$(suitcase_dir)/kubeconfig/kubeconfig"
     mkdir -p "$(dirname "$KUBECONFIG")" 2>/dev/null || true
 
     if [ "$(kubectl config current-context 2>/dev/null)" != "$clustername" ]; then
@@ -78,12 +78,16 @@ ensure_oc_login () {
   fi
 }
 
-ensure_ansible_runtime () {
+suitcase_dir () {
     # Careful not to quote $SUITCASE_DIR, as `install.sh` will substitute it
     # at suitcase install time:
-    export PATH=$SUITCASE_DIR/bin":$PATH"
-    export ANSIBLE_ROLES_PATH=$SUITCASE_DIR"/roles"
-    export ANSIBLE_COLLECTIONS_PATHS=$SUITCASE_DIR
+    echo $SUITCASE_DIR
+}
+
+ensure_ansible_runtime () {
+    export PATH="$(suitcase_dir)/bin:$PATH"
+    export ANSIBLE_ROLES_PATH="$(suitcase_dir)/roles"
+    export ANSIBLE_COLLECTIONS_PATHS="$(suitcase_dir)"
 
     # https://github.com/ansible/ansible/issues/32499, https://bugs.python.org/issue35219
     case "$(uname -s)" in
