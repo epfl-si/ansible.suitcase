@@ -42,13 +42,6 @@ ensure_tkgi () {
     local clustername="$1"; shift
 
     export KUBECONFIG="$(suitcase_dir)/kubeconfig/kubeconfig"
-
-    # Tanzu SR 22333578705: the OIDC! It no works!!
-    case "$(python3-shim -c "import kubernetes; kubernetes.client.CoreV1Api().list_pod_for_all_namespaces()" 2>&1)" in
-        *CERTIFICATE_VERIFY_FAILED*)
-            rm -rf "$KUBECONFIG" ;;
-    esac
-
     mkdir -p "$(dirname "$KUBECONFIG")" 2>/dev/null || true
 
     if [ "$(kubectl config current-context 2>/dev/null)" != "$clustername" ]; then
@@ -75,6 +68,28 @@ do_login_tkgi () {
     warn "Please log in to TKGI cluster $clustername using your GASPAR credentials"
     read_interactive "GASPAR username" USERNAME "$(whoami)"
     tkgi get-kubeconfig "$clustername" -u $USERNAME "$@"
+
+    # Tanzu SR 22333578705: the OIDC! It no works!!
+    (IFS=
+     while read line; do
+         case "$line" in
+             *idp-certificate-authority-data*)
+                 if (which openssl && which base64) >/dev/null 2>&1; then
+                     case "$(echo "$line" | sed 's/.*idp-certificate-authority-data: //' | \
+                             base64 -d | openssl x509 -noout -purpose)" in
+                         *"SSL server CA : No"*)
+                             ;;  # Skip that line
+                         *)
+                             echo "$line" ;;
+                     esac
+                 else
+                     : # Just skip the line - Itstheonlywaytobesure.png
+                 fi ;;
+             *)
+                 echo "$line" ;;
+         esac
+     done) < "$KUBECONFIG" > "$KUBECONFIG.cleaned"
+    mv "$KUBECONFIG.cleaned" "$KUBECONFIG"
 
     kubectl config use-context "$clustername"
 }
