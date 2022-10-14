@@ -70,8 +70,7 @@ do_login_tkgi () {
     tkgi get-kubeconfig "$clustername" -u $USERNAME "$@"
 
     # Tanzu SR 22333578705: the OIDC! It no works!!
-    (IFS=
-     while read line; do
+    (while IFS= read line; do
          case "$line" in
              *idp-certificate-authority-data*)
                  if (which openssl && which base64) >/dev/null 2>&1; then
