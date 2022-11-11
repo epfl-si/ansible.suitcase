@@ -35,6 +35,12 @@
 #                                 present (we obviously can't just install it). 0 means
 #                                 that the calling Ansible project doesn't require Keybase.
 #
+# $SUITCASE_WITH_KBFS             1 (the default) means to check for the /keybase
+#                                 directory (we obviously can't just install
+#                                 it). 0 means that the calling Ansible project
+#                                 uses `keybase fs read` and doesn't use
+#                                 /keybase directly.
+#
 # $SUITCASE_WITH_EYAML            1 means to install EYAML (which requires Ruby). 0 (the
 #                                 default) means that the calling Ansible project doesn't
 #                                 require EYAML nor Ruby.
@@ -126,6 +132,7 @@ fi
 : ${SUITCASE_EYAML_VERSION:=3.2.0}
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
+: ${SUITCASE_WITH_KBFS:=1}
 : ${SUITCASE_WITH_HELM:=0}
 : ${SUITCASE_WITH_KUBECTL:=0}
 
@@ -560,12 +567,28 @@ ensure_eyaml () {
 }
 
 ensure_keybase () {
+    if ! which keybase; then
+        warn <<EOF
+Keybase is not installed, cannot decipher and push secrets.
+EOF
+        unsatisfied keybase
+    elif ! keybase whoami; then
+        warn <<EOF
+Please log into Keybase so as to be able to decipher secrets.
+EOF
+        unsatisfied keybase
+    else
+        satisfied keybase
+    fi
+}
+
+ensure_kbfs () {
     if [ -d /keybase/team/ ]; then
         satisfied keybase
         return
     fi
 
-    unsatisfied keybase
+    unsatisfied kbfs
     if [ "$(uname -s)" = "Darwin" ]; then
         for d in /Volumes/Keybase*; do
             if ! test -d "$d"; then
