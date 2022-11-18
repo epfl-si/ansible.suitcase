@@ -351,7 +351,7 @@ ensure_python3 () {
         # System-provided Python 3 is absent or unsuitable; download one
         ensure_python_build_deps
         ensure_pyenv
-        local version="$(set -- $SUITCASE_PYTHON_VERSIONS; echo "$1")"
+        local version="$(set -- $SUITCASE_PYTHON_VERSIONS; echo "${@: -1}")"
         if ! run_pyenv versions |grep -w "$version"; then
             run_pyenv install "$version"
         fi
