@@ -10,10 +10,7 @@
 # $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
 # (mandatory)
 #
-# $SUITCASE_PYTHON_VERSIONS       A list of acceptable Python versions
-#                                 to use. (A reasonable default value is
-#                                 provided, which will try and make use of
-#                                 the system-distributed Python 3)
+# $SUITCASE_PYTHON_VERSIONS       Obsolete, do not use.
 #
 # $SUITCASE_RUBY_VERSIONS         A list of acceptable Ruby versions to use.
 #                                 Ignored if $SUITCASE_NO_EYAML is set.
