@@ -208,9 +208,6 @@ ensure_suitcase_ansible_version_set () {
             */presensible)
                 # https://github.com/epfl-fsd/presence_bot/issues/30
                 SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
-            */tulsible)
-                # https://github.com/epfl-si/ops.tuleap/issues/1
-                SUITCASE_ANSIBLE_VERSION=3.4.0 ;;
             *)
                 fatal <<'PLEASE_SET_SUITCASE_ANSIBLE_VERSION'
 Please set SUITCASE_ANSIBLE_VERSION upon invoking the suitcase, e.g.
