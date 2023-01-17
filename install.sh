@@ -364,6 +364,7 @@ EOF
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
+export PATH="$(python_user_base)"/bin:\$PATH
 export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
 
@@ -562,7 +563,21 @@ ensure_kbfs () {
         for d in /Volumes/Keybase*; do
             if ! test -d "$d"; then
                 warn <<EOF
-Keybase is installed, but the /keybase directory is not working.
+Keybase is installed, but the $KEYBASE directory is not working.
+
+Please follow the instructions at
+https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
+to resolve this issue.
+EOF
+                warn <<'EOF'
+Keybase is installed, but the $KEYBASE directory is not working.
+
+Please follow the instructions at
+https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
+to resolve this issue.
+EOF
+                warn <<"EOF"
+Keybase is installed, but the $KEYBASE directory is not working.
 
 Please follow the instructions at
 https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
