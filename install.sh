@@ -364,7 +364,7 @@ EOF
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
-export PATH="$(python_user_base)"/bin:\$PATH
+export PATH="$(python_user_base)"/bin:"\$PATH"
 export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
 
