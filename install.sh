@@ -392,7 +392,12 @@ PYTHON3_SHIM
 
 ensure_pip_deps () {
     ensure_pip
-    ensure_pip_dep cryptography --prefer-binary
+    # https://stackoverflow.com/questions/74981558: be sure to upgrade
+    # pyOpenSSL even if all we want is the cryptography module. Also,
+    # preferring binaries affords the suitcase a chance to work on
+    # workstations without OpenSSL's development kit.
+    ensure_pip_dep pyOpenSSL -U --prefer-binary
+
     for dep in $SUITCASE_PIP_EXTRA; do
         ensure_pip_dep "$dep"
     done
