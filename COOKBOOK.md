@@ -139,29 +139,13 @@ If you have INI-style inventory, and despite the lack of a text quoting feature 
 my-kubernetes      ansible_connection=local  ansible_python_interpreter={{ansible_playbook_python}}
 ```
 
-## Do *not* rely on homemade fragments in your teammates' `~/.ssh/config`
-
-Instead, use the `ansible_ssh_common_args` variable in the inventory:
-
-```yaml
-all:
-  vars:
-    ansible_user: root
-    ansible_ssh_common_args: "-o ProxyJump=headnode"
-  hosts:
-    headnode:
-      ansible_ssh_common_args: ""
-```
-
-Rationale: your Ansible project uses the suitcase, presumably because it strives to be portabile and self-contained. Its proper operation should *not* depend on extra steps such as your colleagues having to edit their `~/.ssh/config`.
-
 ## Add `-F /dev/null` to all your `ansible_ssh_common_args`
 
 - Fact #1: most `/etc/ssh/ssh_config`s out there will have a stanza like <pre>SendEnv LANG LC_*</pre>
 - Fact #2: most remote `/etc/ssh/sshd_config`s will have a matching `AcceptEnv` stanza
 - Fact #3: facts #1 and #2 combined can be pretty convenient for interactive ssh sessions. **However...**
 - Fact #4: a lot of people have no clue how locales work. When using their code as part of some Ansible module, you don't want to have to debug why it works on your workstation (configured with French locale, except without Unicode), but not your intern's (which has German for `LC_PAPER` and Polish for everything else).
-- Fact #5: you don't really need a site- or user-wide ssh configuration file for Ansible to operate properly; see previous §.
+- Fact #5: you don't really need a site- or user-wide ssh configuration file for Ansible to operate properly; see next § for more on this topic.
 
 **Therefore,** you should tell Ansible to ignore `~/.ssh/config` and `/etc/ssh/config` entirely:
 
@@ -172,3 +156,19 @@ all:
 ```
 
 💡 The `ssh(1)` manpage suggests a theoretically less heavy-handed approach, using `-o SendEnv='-LC_*' -o SendEnv=-LANG` instead. The drawback of that, of course, is that it doesn't work in practice — The hyphen form of `SendEnv` doesn't appear to have any effect whatsoever on OpenSSH_9.0p1's ssh client (the one that Mac OS X Ventura ships with).
+
+## Do *not* rely on homemade fragments in your teammates' `~/.ssh/config`
+
+Instead, use the `ansible_ssh_common_args` variable in the inventory. Combining with the advice from the previous §:
+
+```yaml
+all:
+  vars:
+    ansible_user: root
+    ansible_ssh_common_args: "-F /dev/null -o ProxyJump=headnode"
+  hosts:
+    headnode:
+      ansible_ssh_common_args: "-F /dev/null"
+```
+
+Rationale: your Ansible project uses the suitcase, presumably because it strives to be portabile and self-contained. Its proper operation should *not* depend on extra steps such as your colleagues having to edit their `~/.ssh/config`.
