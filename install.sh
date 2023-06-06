@@ -75,11 +75,7 @@
 #   bin/eyaml                 The eyaml executable
 #   roles/                    If you pass $SUITCASE_ANSIBLE_REQUIREMENTS,
 #   ansible_collections/      the Ansible Galaxy roles resp. collections will
-#                             be installed there. You should therefore export
-#                             ANSIBLE_ROLES_PATH=$SUITCASE_DIR/roles and
-#                             ANSIBLE_COLLECTIONS_PATHS=$SUITCASE_DIR
-#                             from the wrapper script (mind the extra “S” at the
-#                             end of ANSIBLE_COLLECTIONS_PATHS!)
+#                             be installed there.
 #
 #   pyenv/                    Various support directories
 #   pyenv/bin/
@@ -441,6 +437,8 @@ ensure_ansible_shims () {
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
+export ANSIBLE_ROLES_PATH="$SUITCASE_DIR"/roles
+export ANSIBLE_COLLECTIONS_PATH="$SUITCASE_DIR"
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
 ANSIBLE_COMMAND_SHIM
         chmod a+x "$SUITCASE_DIR/bin/$executable"
