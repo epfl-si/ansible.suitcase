@@ -19,7 +19,7 @@ by connecting over ssh to targets in the project's [inventory](https://docs.ansi
 - you must have a bash-like shell installed. This can be particularly challenging for [Windows® users](./windows/USERS-GUIDE-WINDOWS.md);
 - you must be able to `ssh` directly into all the nodes in the inventory, on a fully automated basis: no password, no passphrase, no prompts to accept server keys for unknown hosts (ditto: Windows® instructions [are provided](./windows/USERS-GUIDE-WINDOWS.md));
 - you may need to have Keybase installed and set up, depending on the specifics of your project;
-- and you must have Ansible and its dependencies installed. Thankfully, this precisely what the suitcase is for.
+- and you must have Ansible and its dependencies installed. Thankfully, *that* is precisely what the suitcase is for.
 
 The Ansible suitcase (invoked directly from the `*sible` script) automatically takes care of that last point. The first four points, on the other hand, are on you; however, we are here to help. Please keep on reading.
 
