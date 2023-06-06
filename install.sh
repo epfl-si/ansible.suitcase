@@ -412,17 +412,6 @@ ensure_pip_dep () {
     fi
 }
 
-ensure_ansible () {
-    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
-         ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
-        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
-        ensure_dir "$SUITCASE_DIR/bin"
-    fi
-
-    ensure_pip_shims "ansible*"
-    check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
-}
-
 ensure_pip_shims () {
     for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
         cat > "$SUITCASE_DIR"/bin/$executable <<PIP_SCRIPT_SHIM
@@ -431,6 +420,29 @@ ensure_pip_shims () {
 export PYTHONPATH=$(pip_install_dir):
 exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
 PIP_SCRIPT_SHIM
+        chmod a+x "$SUITCASE_DIR/bin/$executable"
+    done
+}
+
+ensure_ansible () {
+    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/ansible")" -o \
+         ! -x "$(readlink "$SUITCASE_DIR/bin/ansible-playbook")" ]; then
+        ANSIBLE_SKIP_CONFLICT_CHECK=1 ensure_pip_dep ansible=="${SUITCASE_ANSIBLE_VERSION}" --upgrade
+        ensure_dir "$SUITCASE_DIR/bin"
+    fi
+
+    ensure_ansible_shims "ansible*"
+    check_version ansible "$("$SUITCASE_DIR/bin/ansible" --version | head -1 | sed 's/ansible //')"
+}
+
+ensure_ansible_shims () {
+    for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
+        cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_COMMAND_SHIM
+#!/bin/sh
+
+export PYTHONPATH=$(pip_install_dir):
+exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
+ANSIBLE_COMMAND_SHIM
         chmod a+x "$SUITCASE_DIR/bin/$executable"
     done
 }
