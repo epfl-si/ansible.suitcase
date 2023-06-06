@@ -41,8 +41,6 @@ ensure_ansible () {    # ④
             bash -x
     fi
     export PATH="$PWD/ansible-deps-cache/bin:$PATH"  # ⑥
-    export ANSIBLE_ROLES_PATH="$PWD/ansible-deps-cache/roles"
-    export ANSIBLE_COLLECTIONS_PATHS="$PWD/ansible-deps-cache"
 
     . ansible-deps-cache/lib.sh  #  ⑦
 }
