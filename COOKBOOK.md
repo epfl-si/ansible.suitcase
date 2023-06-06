@@ -157,9 +157,11 @@ all:
 
 💡 The `ssh(1)` manpage suggests a theoretically less heavy-handed approach, using `-o SendEnv='-LC_*' -o SendEnv=-LANG` instead. The drawback of that, of course, is that it doesn't work in practice — The hyphen form of `SendEnv` doesn't appear to have any effect whatsoever on OpenSSH_9.0p1's ssh client (the one that Mac OS X Ventura ships with).
 
-## Do *not* rely on homemade fragments in your teammates' `~/.ssh/config`
+## Rely less on homemade fragments in your teammates' `~/.ssh/config`
 
-Instead, use the `ansible_ssh_common_args` variable in the inventory. Combining with the advice from the previous §:
+Your Ansible project uses the suitcase, presumably because it strives to be portable and self-contained. Therefore, its proper operation should avoid depending on ad-hoc configuration steps such as your colleagues having to edit their `~/.ssh/config` manually, inasmuch as possible. (Note that this doesn't rule out homemade `~/.ssh/config` fragments being disseminated as part of the team lore, e.g. for the purpose of manual ssh access outside of Ansible; that is the reason why the [users guide](./USERS-GUIDE.md) brushes up on this topic.)
+
+Consider setting the `ansible_ssh_common_args` variable in your inventory so as to provide `~/.ssh/config`-equivalent functionality to your configuration-as-code — regardless of whether you disabled `~/.ssh/config` in the first place, as per the advice in the previous §. In particular, you have to make sure that Ansible is able to reach your fleet over ssh, preferably without clunky and error-prone steps being involved such as typing in ssh passwords[^1]. For instance, suppose you are using Ansible to administer a cluster in which only `headnode` is reachable directly through ssh. You would then want to configure the `ProxyJump` ssh option for all nodes except `headnode`. Combining this task with advice from the previous §, this works out to the following excerpt for your YAML inventory:
 
 ```yaml
 all:
@@ -171,4 +173,6 @@ all:
       ansible_ssh_common_args: "-F /dev/null"
 ```
 
-Rationale: your Ansible project uses the suitcase, presumably because it strives to be portabile and self-contained. Its proper operation should *not* depend on extra steps such as your colleagues having to edit their `~/.ssh/config`.
+[Ansible's precedence rules for vars](https://docs.ansible.com/ansible/latest/reference_appendices/general_precedence.html) do what you want here, i.e. the setting in `headnode` for `ansible_ssh_common_args` shadows the one in `all`. (Based on the same reference material, `ansible_user: root` will apply to the whole cluster, including `headnode` as the vars for the latter don't have an override for it.)
+
+[^1]: In fact, it turns out that Ansible's primitive support for prompting for secrets makes password-based ssh access either unwieldy or downright infeasible, depending on the specifics.
