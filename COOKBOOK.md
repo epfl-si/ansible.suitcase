@@ -95,7 +95,7 @@ while [ "$#" -gt 0 ]; do
   esac
 done</pre>
 2. Change `-i inventory.yml` on the last line into a function invocation (and `"$@"` into `"${ansible_args[@]}"`), e.g.<pre>
-ansible-playbook -i $(inventories) playbook.yml "${ansible_args[@]}"</pre>
+ansible-playbook $(inventories) playbook.yml "${ansible_args[@]}"</pre>
 3. Write `inventories` as a shell function e.g. like this:<pre>
 inventories () {
   case "$inventory_mode" in
