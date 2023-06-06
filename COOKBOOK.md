@@ -147,7 +147,7 @@ my-kubernetes      ansible_connection=local  ansible_python_interpreter={{ansibl
 - Fact #4: a lot of people have no clue how locales work. When using their code as part of some Ansible module, you don't want to have to debug why it works on your workstation (configured with French locale, except without Unicode), but not your intern's (which has German for `LC_PAPER` and Polish for everything else).
 - Fact #5: you don't really need a site- or user-wide ssh configuration file for Ansible to operate properly; see next § for more on this topic.
 
-**Therefore,** you should tell Ansible to ignore `~/.ssh/config` and `/etc/ssh/config` entirely:
+**Therefore,** consider telling Ansible to ignore `~/.ssh/config` and `/etc/ssh/config` entirely:
 
 ```yaml
 all:
@@ -175,4 +175,4 @@ all:
 
 [Ansible's precedence rules for vars](https://docs.ansible.com/ansible/latest/reference_appendices/general_precedence.html) do what you want here, i.e. the setting in `headnode` for `ansible_ssh_common_args` shadows the one in `all`. (Based on the same reference material, `ansible_user: root` will apply to the whole cluster, including `headnode` as the vars for the latter don't have an override for it.)
 
-[^1]: In fact, it turns out that Ansible's primitive support for prompting for secrets makes password-based ssh access either unwieldy or downright infeasible, depending on the specifics.
+[^1]: In fact, it turns out that [Ansible's primitive support for prompting for secrets](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_prompts.html) makes password-based ssh access either [unwieldy](https://linuxhint.com/how_to_use_sshpass_to_login_for_ansible/), [insecure](https://stackoverflow.com/questions/37004686/how-to-pass-a-user-password-in-ansible-command), or downright infeasible, depending on the specifics.
