@@ -101,8 +101,7 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
         # - 2.6.3 is the latest version on Mac OS X 11.3.1 (20E241) (Big Sur)
         # - 2.6.8 is the latest version on Mac OS X 12.4 (21F79) (Monterey)
         # - 2.6.10 is the latest version on Mac OS X 13.1 (22C65) (Ventura)
-        # - 3.0.2 is the latest version on Linux Ubuntu Jammy
-        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3 2.6.8 2.6.10 3.0.2"
+        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3 2.6.8 2.6.10"
     fi
 fi
 
