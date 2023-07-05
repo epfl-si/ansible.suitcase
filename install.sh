@@ -675,10 +675,8 @@ ensure_ruby_build_deps () {
 
 
 ensure_lib_sh () {
-    if [ -f "$SUITCASE_DIR"/lib.sh ]; then
-        satisfied libsh
-        return
-    fi
+    # Don't test for existence; always download it afresh, to avoid a
+    # mismatched-versions hazard.
 
     local suitcase_dir_quoted
     suitcase_dir_quoted="'"$(echo "$SUITCASE_DIR" | sed "s|\(['/]\)|"'\\\1'"|g")"'"
