@@ -40,9 +40,8 @@ ensure_suitcase () {    # ④
             SUITCASE_ANSIBLE_VERSION=3.4.0 \
             bash -x
     fi
-    export PATH="$PWD/ansible-deps-cache/bin:$PATH"  # ⑥
-
-    . ansible-deps-cache/lib.sh  #  ⑦
+    . ansible-deps-cache/lib.sh  #  ⑥
+    ensure_ansible_runtime  # ⑦
 }
 
 ensure_suitcase
@@ -55,22 +54,22 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 : This tells bash to apply [modern error management](http://mywiki.wooledge.org/BashFAQ/105).
 
 ②
-: The first thing the wrapper script does is to `cd` into the directory it lives in, so that lines such as ⑦ below work without further ado. This somewhat contrived incantation is space- and control-character-resistant, as well as [symlink-resistant](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks); yet, it preserves the caller's working directory in `$OLDPWD`, should you need to look there for any reason.
+: The first thing the wrapper script does is to `cd` into the directory it lives in, so that lines such as ⑥ below work without further ado. This somewhat contrived incantation is space- and control-character-resistant, as well as [symlink-resistant](https://stackoverflow.com/a/60625224/435004) (without relying on the `realpath` command, which Mac OS X lacks); yet, it preserves the caller's working directory in `$OLDPWD`, should you need to look there for any reason.
 
 ③
-: This is where you put the minimum amount of info for the intern to figure out how to use the `foosible` script. Although that is a matter of taste, keeping the `help()` function as close as possible to the top of the script will also help people who don't run unknown commands to see what they do, even with `--help`. If you wonder where the `fatal` function comes from, see ⑦.
+: This is where you put the minimum amount of info for the intern to figure out how to use the `foosible` script. Although that is a matter of taste, keeping the `help()` function as close as possible to the top of the script will also help people who don't run unknown commands to see what they do, even with `--help`. If you wonder where the `fatal` function comes from, see ⑥.
 
 ④
-: The `ensure_suitcase()` function, as the name implies, ensures that the Ansible suitcase is ready in `./ansible-deps-cache`. There is an install-time (once) part to that job (⑤, see below) and a run-time (everytime) part (⑥).<br/>💡 Feel free to search-n'replace the `ansible-deps-cache` path to suit your preferences e.g. `tmp/ansible`; but do not attempt to use e.g. `$HOME/.suitcase`, as the Ansible suitcase doesn't support sharing (even parts of) its runtime between projects.
+: The `ensure_suitcase()` function, as the name implies, ensures that the Ansible suitcase is ready in `./ansible-deps-cache`. There is an install-time (once) part to that job (⑤, see below) and a run-time (everytime) part (⑦).<br/>💡 Feel free to search-n'replace the `ansible-deps-cache` path to suit your preferences e.g. `tmp/ansible`; but do not attempt to use e.g. `$HOME/.suitcase`, as the Ansible suitcase doesn't support sharing (even parts of) its runtime between projects.
 
 ⑤
-: This `if` ... `fi` block is the idempotent operation that installs the suitcase by running it as a shell script downloaded from GitHub on-the-spot. That is, unless `ansible-deps-cache/.versions` already exists, which is the stamp file that the suitcase creates upon successful installation. One can configure a variety of parameters through environment variables, as documented in the comments [at the top of the suitcase's `install.sh`](./install.sh).
+: This `if` ... `fi` block is the idempotent operation that installs the suitcase by running it as a shell script downloaded from GitHub on-the-spot. That is, unless `ansible-deps-cache/.versions` already exists, which is the stamp file that the suitcase creates upon successful installation. One can configure a variety of install-time parameters through environment variables, as documented in the comments [at the top of the suitcase's `install.sh`](./install.sh).
 
 ⑥
-: In order to use the installed suitcase, a couple of environment variables must be set, most notably `$PATH` so that the wrapper script picks up the right `ansible`, `ansible-playbook` etc. executables. The other two variables let Ansible pick up dependencies installed using the `SUITCASE_ANSIBLE_REQUIREMENTS` feature; it doesn't hurt to have them, even if you don't (yet) have a [`requirements.yml` file](https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles-and-collections-from-the-same-requirements-yml-file).
+: The suitcase comes with [a small run-time shell library](./lib.sh) with a few handy functions such as `fatal` (but also `warn`, `read_interactive` and more), which your wrapper script may want to call.
 
 ⑦
-: The suitcase comes with [a small run-time shell library](./lib.sh) with a few handy functions such as `fatal` (but also `warn`, `read_interactive` and more), which your wrapper script may want to call.
+: In order to use the installed suitcase, a couple of environment variables must be set, most notably `$PATH` so that the wrapper script picks up the right `ansible`, `ansible-playbook` etc. executables. This is what the `ensure_ansible_runtime` function takes care of.
 
 ⑧
 : The script transfers control to `ansible-playbook` at the end and... That's pretty much it.
