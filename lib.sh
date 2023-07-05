@@ -108,8 +108,6 @@ suitcase_dir () {
 
 ensure_ansible_runtime () {
     export PATH="$(suitcase_dir)/bin:$PATH"
-    export ANSIBLE_ROLES_PATH="$(suitcase_dir)/roles"
-    export ANSIBLE_COLLECTIONS_PATHS="$(suitcase_dir)"
 
     # https://github.com/ansible/ansible/issues/32499, https://bugs.python.org/issue35219
     case "$(uname -s)" in
