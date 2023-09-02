@@ -130,3 +130,7 @@ ansible_flag_set_var_caller_pwd () {
 ansible_flag_set_var_homedir () {
    echo "-e $1=$PWD"
 }
+
+ansible_flag_set_var_suitcase_python_interpreter () {
+    echo "-e $1=$(suitcase_dir)"/bin/python3-shim
+}
