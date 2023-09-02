@@ -123,6 +123,10 @@ ansible_flag_set_var_git_current_branch () {
     esac
 }
 
-ansible_flag_set_var_homedir () {
+ansible_flag_set_var_caller_pwd () {
    echo "-e $1=$OLDPWD"
+}
+
+ansible_flag_set_var_homedir () {
+   echo "-e $1=$PWD"
 }
