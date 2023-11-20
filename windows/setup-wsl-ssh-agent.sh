@@ -60,7 +60,7 @@ wsl_version() {
 }
 
 find_npiperelay() {
-    npiperelay="$(which npiperelay.exe)"
+    npiperelay="$(which npiperelay.exe || true)"
     case "$npiperelay" in
         "") fatal << 'CANNOT_FIND_NPIPERELAY' ;;
 Fatal: npiperelay.exe not found.
