@@ -104,6 +104,19 @@ This part is not supported by Microsoft (yet) and therefore requires using a thi
 1. Open a Linux command-line terminal and execute the suitcase script you just downloaded, using `bash`. You will have to convert the Windows® path to a Linux path; so for example, if you installed `wsl-ssh-agent-gui` (and the script) into `C:\Users\Paul\MyStuff\wsl-ssh-agent`, you need to type<pre>bash /mnt/c/Users/Paul/MyStuff/wsl-ssh-agent/setup-wsl-ssh-agent.sh</pre> 💡 You can type in the first few characters of each directory name along that path, then press the Tab key to have the Linux shell guess the remainder on your behalf. This feature is called [command-line completion](https://en.wikipedia.org/wiki/Command-line_completion). You will find it especially helpful if the path contains directories with spaces in their names.<br/>💡 You may be prompted to allow installing packages using [the `sudo` command](https://en.wikipedia.org/wiki/Sudo). If so, you should use your “regular” user's password (the one you set up upon installing Ubuntu 20.04); there is no separate administrator (`root`) password on modern Linux distributions.
 1. Control with <pre>ssh-add -l</pre> from the Linux world. This should still work if you log out and back into your Windows® session.
 
+### Ensure that you can actually wield your private key
+
+| 🎯 Goal for this paragraph |
+|-----|
+| You know you are done with this step when you can `ssh` from Linux, into at least one remote host without using the remote password. |
+
+1. Try it! Maybe it will just work.
+1. If not, try again with `-vv` on the ssh command line to activate debugging.<br/> If you see the following error,
+   ```
+   get_agent_identities: ssh_agent_bind_hostkey: communication with agent failed
+   ```
+   it means that you need to upgrade your Windows®-side OpenSSH stack. Follow the steps in [this Super User answer.](https://superuser.com/a/1744159)
+
 ## Keybase for WSL
 
 | 🎯 Goal for this paragraph |
