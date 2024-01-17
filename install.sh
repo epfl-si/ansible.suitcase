@@ -534,6 +534,7 @@ ensure_rbenv_shim () {
 #!/bin/sh
 
 export RBENV_VERSION="$(rbenv_version)"
+export GEM_HOME="$(rbenv_gem_home)"
 export GEM_PATH="$(rbenv_gem_home)"
 exec "$(rbenv_gem_home)/bin/ruby" "$(rbenv_gem_home)/bin/$cmd" "\$@"
 
