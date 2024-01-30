@@ -401,11 +401,29 @@ ensure_pip_deps () {
 }
 
 ensure_pip_dep () {
+    if check_pip_dep "$1"; then
+        satisfied "pip-$1"
+        return
+    fi
     if "$SUITCASE_DIR"/bin/pip3 install "$@"; then
         satisfied "pip-$1"
     else
         unsatisfied "pip-$1"
     fi
+}
+
+check_pip_dep () {
+    local requirement=$1
+    case "$requirement" in
+        *==*)
+            local pkg="$(echo "$requirement" | cut -f1 -d=)"
+            local version="$(echo "$requirement" | cut -f3- -d=)"
+            "$SUITCASE_DIR"/bin/pip3 show "$pkg" | grep -q "Version: $version"
+            ;;
+        *)
+            "$SUITCASE_DIR"/bin/pip3 show "$1" >/dev/null
+            ;;
+    esac
 }
 
 ensure_pip_shims () {
