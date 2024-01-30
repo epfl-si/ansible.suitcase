@@ -353,7 +353,7 @@ EOF
     fi
     # We want to upgrade pip first e.g. because of
     # https://stackoverflow.com/a/67631115/435004
-    if [ ! -e "$SUITCASE_DIR"/python-libs/bin/pip3 ]; then
+    if [ ! -e "$SUITCASE_DIR"/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
         env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
