@@ -153,4 +153,13 @@ sudo apt -yf install</pre>
 
 Wow! That's an achievement which carries a lot of command-line XP points (no pun intended on the XP part). Pat yourself on the back and enjoy your newly-minted superpowers.
 
+## Troubleshooting
+
+### Keybase is stuck inside WSL
+
+Try restarting your WSL instance.
+
+1. From a command line or PowerShell window with administrator privileges, type `wsl --shutdown`
+2. Quit and restart whatever it is you were doing (e.g. Visual Studio code)
+
 ## [Back to the main users guide](../USERS-GUIDE.md)
