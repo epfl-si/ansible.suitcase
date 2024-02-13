@@ -366,7 +366,7 @@ export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
 
 case "\$1" in
-  install|uninstall)
+  install)
     exec "$SUITCASE_DIR/bin/python3" -m pip "\$@" --user -I ;;
   *)
     exec "$SUITCASE_DIR/bin/python3" -m pip "\$@" ;;
