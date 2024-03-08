@@ -364,6 +364,8 @@ EOF
 export PATH="$(python_user_base)"/bin:"\$PATH"
 export PYTHONPATH="$(pip_install_dir):"
 export PYTHONUSERBASE="$(python_user_base)"
+# We actually don't, as we install into PYTHONUSERBASE:
+export PIP_BREAK_SYSTEM_PACKAGES=1
 
 case "\$1" in
   install)
