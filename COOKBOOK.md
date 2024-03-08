@@ -37,7 +37,7 @@ ensure_suitcase () {    # ④
     if ! test -f ansible-deps-cache/.versions 2>/dev/null; then  # ⑤
         curl https://raw.githubusercontent.com/epfl-si/ansible.suitcase/master/install.sh | \
             SUITCASE_DIR=$PWD/ansible-deps-cache \
-            SUITCASE_ANSIBLE_VERSION=3.4.0 \
+            SUITCASE_ANSIBLE_VERSION=9.3.0 \
             bash -x
     fi
     . ansible-deps-cache/lib.sh  #  ⑥
