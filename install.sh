@@ -291,18 +291,23 @@ run_pyenv () {
         "$SUITCASE_DIR"/pyenv/bin/pyenv "$@"
 }
 
-check_python3_version () {
-    local version
-    version="$("$SUITCASE_DIR"/bin/python3 --version | sed 's/Python //')"
+is_python_compatible_with_ansible () {
+    local python_binary="$1"
+    local version="$("$python_binary" --version | sed 's/Python //')"
     case "$version|$SUITCASE_ANSIBLE_VERSION" in
-        3.12*|5*) fatal <<BLACKLISTED_PYTHON ;;
+        3.12*|5*) warn <<BLACKLISTED_PYTHON ; return 1 ;;
+===================================================================================
+
 Fatal: Python 3.12 is *not* compatible with old Ansibles. Please downgrade to 3.11,
 or upgrade Ansible.
 
 See: https://github.com/ansible/ansible/issues/81946
+
+
+===================================================================================
 BLACKLISTED_PYTHON
     esac
-    check_version python "$version"
+    return 0
 }
 
 ensure_python3 () {
@@ -319,7 +324,7 @@ ensure_python3 () {
                         ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
                         ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
 
-                        check_python3_version
+                        is_python_compatible_with_ansible "$SUITCASE_DIR"/bin/python3
                         return 0 ;;
                     *) continue ;;
                 esac
