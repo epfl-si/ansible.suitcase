@@ -294,11 +294,8 @@ run_pyenv () {
 check_python3_version () {
     local version
     version="$("$SUITCASE_DIR"/bin/python3 --version | sed 's/Python //')"
-    case "$version" in
-        3.12*)
-            case "$SUITCASE_ANSIBLE_VERSION" in
-                5*)
-            fatal <<BLACKLISTED_PYTHON ;;
+    case "$version|$SUITCASE_ANSIBLE_VERSION" in
+        3.12*|5*) fatal <<BLACKLISTED_PYTHON ;;
 Fatal: Python 3.12 is *not* compatible with old Ansibles. Please downgrade to 3.11,
 or upgrade Ansible.
 
