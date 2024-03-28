@@ -316,15 +316,16 @@ ensure_python3 () {
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
 
         # Prefer already-installed version, if available
-        for already_installed in /usr/local/bin/python3 /usr/bin/python3; do
+        for already_installed in /usr/local/bin/python3 /usr/local/bin/python3.11 /usr/bin/python3; do
             if [ -x "$already_installed" ]; then
                 version="$($already_installed --version 2>&1)"
                 case "$version" in
                     Python*)
+                        is_python_compatible_with_ansible "$already_installed" 2>/dev/null || continue
+
                         ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
                         ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
 
-                        is_python_compatible_with_ansible "$SUITCASE_DIR"/bin/python3
                         return 0 ;;
                     *) continue ;;
                 esac
@@ -340,6 +341,10 @@ ensure_python3 () {
         ensure_symlink pyenv/versions/* "$SUITCASE_DIR"/python
         ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
+
+    # Re-check unconditionnally (and this time, show the error message and
+    # bail out in case of failure):
+    is_python_compatible_with_ansible "$SUITCASE_DIR"/bin/python3
 
     check_python3_version
 }
