@@ -115,6 +115,17 @@ ensure_ansible_runtime () {
     esac
 }
 
+ensure_confined_helm () {
+    export HELM_CACHE_HOME="$(suitcase_dir)"/helm/cache
+    export HELM_CONFIG_HOME="$(suitcase_dir)"/helm/config
+
+    for dir in "$HELM_CACHE_HOME" "$HELM_CONFIG_HOME"; do
+        if [ ! -d "$dir" ]; then
+            mkdir -p "$dir"
+        fi
+    done
+}
+
 ansible_flag_set_var_git_current_branch () {
     git_current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
     case "$git_current_branch" in
