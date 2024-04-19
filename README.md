@@ -10,6 +10,7 @@ anything as root.
 
 * [apprsible](https://gitlab.epfl.ch/si-idevfsd/vmapprentis-deploy/-/blob/main/ansible/apprsible)
 * [archivewebsible](https://github.com/epfl-si/homepage-archiveweb.epfl.ch/blob/master/ansible/archivewebsible)
+* :new: [atarisible](https://github.com/epfl-si/atari.ops/blob/main/atarisible)
 * [botsible](https://github.com/SaphireVert/gitlabot/blob/master/ansible/botsible)
 * [busible](https://github.com/epfl-si/businesscard.ops/blob/main/ansible/busible)
 * [cataiamsible](https://github.com/epfl-si/catalyse-iam.ops/blob/main/cataiamsible)
@@ -31,6 +32,7 @@ anything as root.
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
 * [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
+* :new: [satosaaasible](https://github.com/epfl-si/satosaaas/blob/main/satosaasible)
 * [skillsible](https://github.com/ponsfrilus/swissskills.ops/blob/main/skillsible)
 * [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
