@@ -626,20 +626,6 @@ Please follow the instructions at
 https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
 to resolve this issue.
 EOF
-                warn <<'EOF'
-Keybase is installed, but the $KEYBASE directory is not working.
-
-Please follow the instructions at
-https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
-to resolve this issue.
-EOF
-                warn <<"EOF"
-Keybase is installed, but the $KEYBASE directory is not working.
-
-Please follow the instructions at
-https://github.com/keybase/keybase-issues/issues/3614#issue-509318240
-to resolve this issue.
-EOF
                 return
             fi
         done
