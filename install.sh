@@ -345,8 +345,6 @@ ensure_python3 () {
     # Re-check unconditionnally (and this time, show the error message and
     # bail out in case of failure):
     is_python_compatible_with_ansible "$SUITCASE_DIR"/bin/python3
-
-    check_python3_version
 }
 
 python_user_base () {
