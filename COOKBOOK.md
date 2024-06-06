@@ -104,6 +104,21 @@ inventories () {
 }</pre>
 4. Rearrange your Ansible inventory by splitting it into `inventory/test.yml` and `inventory/prod.yml`
 
+## Accepting the remote ssh keys, once
+
+Upon encountering a remote ssh host to which you never logged in before, Ansible will do nothing special, allowing the `ssh` command to prompt you to accept the remote host's public key. So far, so good.
+
+Upon running a task that spans *several* unknown hosts, Ansible will attempt to run them in parallel (as it should). This will result in multiple ssh commands  prompting you to type `yes` at the same time and (worse) competing with each other to read your bytes from the terminal, which makes it very unlikely indeed to transmit a correct and complete `y`, `e`, `s`, carriage-return sequence to any one of the ssh subprocesses. Your intern will be very confused.
+
+Solution: create an `ansible.cfg` file that reads
+
+```
+[ssh_connection]
+ssh_args = -o StrictHostKeyChecking=accept-new
+```
+
+(Credits to [baconadmin](https://www.reddit.com/r/ansible/comments/92ds1w/accept_all_host_keys_one_time/e35sgjk/))
+
 # Lore
 
 This chapter contains additional suggestions or quote-unquote “best practices” that cannot just be boiled down into a shell wrapper. As a consequence, you will have to heed them by yourselves in your suitcase-using Ansible code.
