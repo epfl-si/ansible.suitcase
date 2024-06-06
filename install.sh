@@ -316,7 +316,7 @@ ensure_python3 () {
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
 
         # Prefer already-installed version, if available
-        for already_installed in /usr/local/bin/python3 /usr/local/bin/python3.11 /usr/bin/python3; do
+        for already_installed in /usr/local/bin/python3 /opt/homebrew/bin/python3.11 /usr/local/bin/python3.11 /usr/bin/python3; do
             if [ -x "$already_installed" ]; then
                 version="$($already_installed --version 2>&1)"
                 case "$version" in
