@@ -279,8 +279,10 @@ ensure_pyenv () {
 }
 
 ensure_ansible_requirements () {
-    ensure_dir "$SUITCASE_DIR/roles"
-    "$SUITCASE_DIR"/bin/ansible-galaxy install --force -p "$SUITCASE_DIR/roles" -i -r "$1"
+    if grep "^roles:" "$1"; then
+      ensure_dir "$SUITCASE_DIR/roles"
+      "$SUITCASE_DIR"/bin/ansible-galaxy role install --force -p "$SUITCASE_DIR/roles" -i -r "$1"
+    fi
     if grep '^collections:' "$1"; then
         "$SUITCASE_DIR"/bin/ansible-galaxy collection install --force -p "$SUITCASE_DIR" -i -r "$1"
     fi
