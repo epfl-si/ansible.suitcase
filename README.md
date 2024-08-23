@@ -31,6 +31,7 @@ anything as root.
 * [paysible](https://github.com/epfl-si/payonline.ops/blob/master/paysible)
 * [possible](https://gitlab.epfl.ch/si-idevfsd/people-dev/-/blob/master/ops/possible)
 * [presensible](https://github.com/epfl-fsd/presence_bot/blob/main/ansible/presensible)
+* :new: [quizzotosible](https://github.com/dwesh163/Quizzoto.ops/blob/main/quizzotosible)
 * [rccsible](https://github.com/epfl-si/rcc/blob/master/ansible/rccsible)
 * :new: [satosaaasible](https://github.com/epfl-si/satosaaas/blob/main/satosaasible)
 * [skillsible](https://github.com/ponsfrilus/swissskills.ops/blob/main/skillsible)
