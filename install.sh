@@ -105,7 +105,6 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
     fi
 fi
 
-: ${SUITCASE_EYAML_VERSION:=3.2.0}
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
 : ${SUITCASE_WITH_KBFS:=1}
@@ -586,6 +585,16 @@ RBENV_CMD_SHIM
 ensure_eyaml () {
     if [ ! -x "$(readlink "$SUITCASE_DIR/bin/eyaml")" ]; then
         ensure_ruby
+
+        if [ -z "$SUITCASE_EYAML_VERSION" ]; then
+            local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby) --version"
+            case "$ruby_version" in
+                "ruby 3"*)
+                    SUITCASE_EYAML_VERSION="4.2.0" ;;
+                "ruby 2"*)
+                    SUITCASE_EYAML_VERSION="3.2.0" ;;
+            esac
+        fi
 
         run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
         ensure_rbenv_shim eyaml
