@@ -12,9 +12,7 @@
 #
 # $SUITCASE_PYTHON_VERSIONS       Obsolete, do not use.
 #
-# $SUITCASE_RUBY_VERSIONS         A list of acceptable Ruby versions to use.
-#                                 Ignored if $SUITCASE_NO_EYAML is set.
-#                                 A reasonable default value is provided.
+# $SUITCASE_RUBY_VERSIONS         Obsolete, do not use.
 #
 # $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
 #                                 (separated with spaces)
@@ -87,25 +85,6 @@
 #
 # - Keybase - The script will test for it (unless [ $SUITCASE_WITH_KEYBASE = 0 ]),
 #   but obviously will not install it in your stead.
-
-if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
-    if [ -n "$SUITCASE_RUBY_VERSION" ]; then
-        SUITCASE_RUBY_VERSIONS="$SUITCASE_RUBY_VERSION"
-    else
-        # As of November 6th, 2024:
-        #
-        # - 2.7.3 is the latest 2.7.x version, which Ruby shall install
-        #   if neither /usr/local/bin/ruby nor /usr/bin/ruby match any of
-        #   the whitelisted versions
-        # - 2.7.0 is the current version on Ubuntu Focal
-        # - 2.6.3 is the latest version on Mac OS X 11.3.1 (20E241) (Big Sur)
-        # - 2.6.8 is the latest version on Mac OS X 12.4 (21F79) (Monterey)
-        # - 2.6.10 is the latest version on Mac OS X 13.1 (22C65) (Ventura)
-        # - 3.2.3 is the current version on Ubuntu Noble
-        # - 3.3.6 is the latest Homebrew version for Mac
-        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3 2.6.8 2.6.10 3.2.3 3.3.6"
-    fi
-fi
 
 : ${SUITCASE_WITH_EYAML:=0}
 : ${SUITCASE_WITH_KEYBASE:=1}
@@ -519,50 +498,24 @@ run_gem_install () {
 }
 
 ensure_ruby () {
-    local ensure_target="$SUITCASE_DIR"/rbenv/shims/ruby
-
     ensure_rbenv
+    ensure_dir "$rbenv_system_dir"/bin
 
-    if [ ! -x "$ensure_target" ]; then
-        # Prefer already-installed version, if available
-        for already_installed_dir in /usr/local/bin /usr/bin; do
-            if ! [ -x "$already_installed_dir"/ruby -a -x "$already_installed_dir"/gem ]; then
-                continue
-            fi
-            local actual_version="$("$already_installed_dir/ruby" --version)"
-            for expected_version in $SUITCASE_RUBY_VERSIONS; do
-                case "$actual_version" in
-                    "ruby $expected_version"*)
-                        rbenv_system_dir="$SUITCASE_DIR"/rbenv/versions/rbenv-system
-                        ensure_dir "$rbenv_system_dir"/bin
-                        for cmd in ruby gem; do
-                            ensure_symlink  "$already_installed_dir/$cmd" "$rbenv_system_dir"/bin/$cmd
-                        done
-                        run_rbenv rehash
-                        break ;;
-                esac
-            done
-        done
-    fi
+    case "$(ruby --version)" in
+        "ruby 3"*) : ;;
+        *) fatal <<EOF
+Please install Ruby version 3.x into your PATH.
+EOF
+       ;;
+    esac
 
-    if [ ! -x "$ensure_target" ]; then
-        # Looks like we have to rebuild it ourselves; pick the
-        # first version in $SUITCASE_RUBY_VERSIONS.
-        ensure_ruby_build_deps
-
-        local version="$(set -- $SUITCASE_RUBY_VERSIONS; echo "$1")"
-        local rbenv_version_dir="$SUITCASE_DIR/rbenv/versions/$version"
-
-        # The configure script of recent Rubies has stopped believing
-        # in linking (-L) against a directory that doesn't exist
-        # (yet). This arguably a missing feature of rbenv; in the
-        # meanwhile patch up things ourselves:
-        ensure_dir "$rbenv_version_dir/lib"
-
-        run_rbenv install "$version"
-    fi
-
-    check_version ruby "$(env RBENV_VERSION="$(rbenv_version)" "$SUITCASE_DIR"/rbenv/shims/ruby --version | cut -d' ' -f2)"
+    already_installed_dir="$(which ruby | xargs dirname)"
+    rbenv_system_dir="$SUITCASE_DIR"/rbenv/versions/rbenv-system
+    ensure_dir "$rbenv_system_dir"/bin
+    for cmd in ruby gem; do
+      ensure_symlink  "$already_installed_dir/$cmd" "$rbenv_system_dir"/bin/$cmd
+    done
+    run_rbenv rehash
 }
 
 ensure_rbenv_shim () {
