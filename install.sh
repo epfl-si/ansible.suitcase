@@ -92,7 +92,7 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
     if [ -n "$SUITCASE_RUBY_VERSION" ]; then
         SUITCASE_RUBY_VERSIONS="$SUITCASE_RUBY_VERSION"
     else
-        # As of October 27th, 2024:
+        # As of November 6th, 2024:
         #
         # - 2.7.3 is the latest 2.7.x version, which Ruby shall install
         #   if neither /usr/local/bin/ruby nor /usr/bin/ruby match any of
@@ -102,7 +102,8 @@ if [ -z "$SUITCASE_RUBY_VERSIONS" ]; then
         # - 2.6.8 is the latest version on Mac OS X 12.4 (21F79) (Monterey)
         # - 2.6.10 is the latest version on Mac OS X 13.1 (22C65) (Ventura)
         # - 3.2.3 is the current version on Ubuntu Noble
-        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3 2.6.8 2.6.10 3.2.3"
+        # - 3.3.6 is the latest Homebrew version for Mac
+        SUITCASE_RUBY_VERSIONS="2.7.3 2.7 2.6.3 2.6.8 2.6.10 3.2.3 3.3.6"
     fi
 fi
 
