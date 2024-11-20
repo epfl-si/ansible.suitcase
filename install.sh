@@ -277,7 +277,7 @@ is_python_compatible_with_ansible () {
     local python_binary="$1"
     local version="$("$python_binary" --version | sed 's/Python //')"
     case "$version/$SUITCASE_ANSIBLE_VERSION" in
-        3.12*/5*) warn <<BLACKLISTED_PYTHON ; return 1 ;;
+        3.12*/[45]*) warn <<BLACKLISTED_PYTHON ; return 1 ;;
 ===================================================================================
 
 Fatal: Python 3.12 is *not* compatible with old Ansibles. Please downgrade to 3.11,
