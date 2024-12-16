@@ -726,7 +726,7 @@ ensure_kubectl () {
     chmod a+x "$SUITCASE_DIR/bin/kubectl"
     "$SUITCASE_DIR/bin/kubectl"
 
-    check_version kubectl "$("$SUITCASE_DIR"/bin/kubectl version 2>/dev/null|grep 'Client Version'|sed -n 's/.*GitVersion:"v\([^"]*\)".*/\1/p')"
+    check_version kubectl "$("$SUITCASE_DIR"/bin/kubectl version 2>/dev/null | sed -E -n 's/.*(Client |Git)Version:[ "]v([^"]*)"?.*/\2/p')"
 }
 
 confirm_sudo() {
