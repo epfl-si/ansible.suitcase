@@ -724,7 +724,6 @@ ensure_kubectl () {
     curl -o "$SUITCASE_DIR/bin/kubectl" \
          https://storage.googleapis.com/kubernetes-release/release/"$SUITCASE_KUBECTL_VERSION"/bin/"$os"/"$arch"/kubectl
     chmod a+x "$SUITCASE_DIR/bin/kubectl"
-    "$SUITCASE_DIR/bin/kubectl"
 
     check_version kubectl "$("$SUITCASE_DIR"/bin/kubectl version 2>/dev/null | sed -E -n 's/.*(Client |Git)Version:[ "]v([^"]*)"?.*/\2/p')"
 }
