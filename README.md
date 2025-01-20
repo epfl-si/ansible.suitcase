@@ -37,9 +37,11 @@ anything as root.
 * :new: [satosaaasible](https://github.com/epfl-si/satosaaas/blob/main/satosaasible)
 * [skillsible](https://github.com/ponsfrilus/swissskills.ops/blob/main/skillsible)
 * [tulsible](https://github.com/epfl-si/ops.tuleap/blob/master/tulsible)
+* :new: [web2010sible](https://github.com/epfl-si/web2010/blob/master/ansible/web2010sible)
 * [wisible](https://gitlab.epfl.ch/si-idevfsd/wikijs-ops/-/blob/master/wisible)
 * [wpsible](https://github.com/epfl-si/wp-ops/blob/master/ansible/wpsible)
 * [wiki8sible](https://gitlab.com/epfl-dojo/wikijs-microk8s/-/blob/main/wiki8sible)
+* :new: [wwwsible](https://github.com/epfl-si/www/blob/main/wwwsible)
 * [xaasible](https://github.com/epfl-si/xaasible-ops/blob/main/xaasible)
 
 
