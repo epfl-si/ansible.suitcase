@@ -556,6 +556,10 @@ ensure_eyaml () {
         fi
 
         run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
+        # Temporary — Required for Ruby 3.4.0 and above, which
+        # unbundled the `base64` gem (unbeknownst to `hiera-eyaml` as
+        # of 2025-03...):
+        run_gem_install base64
         ensure_rbenv_shim eyaml
     fi
     check_version eyaml "$("$SUITCASE_DIR/bin/eyaml" --version | sed -n 's/Welcome to eyaml \([a-z0-9.-]*\).*/\1/p')"
