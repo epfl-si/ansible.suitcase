@@ -548,6 +548,10 @@ ensure_eyaml () {
                     SUITCASE_EYAML_VERSION="4.2.0" ;;
                 "ruby 2"*)
                     SUITCASE_EYAML_VERSION="3.2.0" ;;
+                *)
+                    warn "Don't know what version of eyaml suits $ruby_version"
+                    unsatisfied eyaml
+                    return ;;
             esac
         fi
 
