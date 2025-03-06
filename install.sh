@@ -542,7 +542,7 @@ ensure_eyaml () {
         ensure_ruby
 
         if [ -z "$SUITCASE_EYAML_VERSION" ]; then
-            local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby) --version"
+            local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby --version)"
             case "$ruby_version" in
                 "ruby 3"*)
                     SUITCASE_EYAML_VERSION="4.2.0" ;;
