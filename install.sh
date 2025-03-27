@@ -305,7 +305,6 @@ ensure_python3 () {
                     Python*)
                         is_python_compatible_with_ansible "$already_installed" 2>/dev/null || continue
 
-                        ensure_symlink "$(dirname $(dirname "$already_installed"))" "$SUITCASE_DIR"/python
                         ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
 
                         return 0 ;;
@@ -320,7 +319,6 @@ ensure_python3 () {
         run_pyenv install --list
         run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
 
-        ensure_symlink pyenv/versions/* "$SUITCASE_DIR"/python
         ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
     fi
 
