@@ -430,15 +430,32 @@ check_pip_dep () {
 }
 
 ensure_pip_shims () {
-    for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
-        cat > "$SUITCASE_DIR"/bin/$executable <<PIP_SCRIPT_SHIM
+    local executable
+
+    if [ -d "$SUITCASE_DIR"/python-libs/bin ]; then     # Linux, Mac OS
+        for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
+            ensure_pip_shim "$executable" "$SUITCASE_DIR"/python-libs/bin/"$executable"
+        done
+    elif [ -d "$SUITCASE_DIR"/python-libs/*/Scripts ]; then     # Windows (Git bash)
+        local targetdir="$(echo "$SUITCASE_DIR"/python-libs/*/Scripts)"
+        for executable in $(cd "$targetdir"; ls -1 $*.exe); do
+            ensure_pip_shim "$(basename "$executable" ".exe")" "$targetdir/$executable"
+        done
+    else
+        fatal "Don't know how to make Pip shims!"
+    fi
+}
+
+ensure_pip_shim () {
+    local shim_path="$SUITCASE_DIR/bin/$1"
+    cat > "$shim_path" <<PIP_SCRIPT_SHIM
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
-exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
+exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 PIP_SCRIPT_SHIM
-        chmod a+x "$SUITCASE_DIR/bin/$executable"
-    done
+
+    chmod a+x "$shim_path"
 }
 
 ensure_ansible () {
@@ -453,17 +470,33 @@ ensure_ansible () {
 }
 
 ensure_ansible_shims () {
-    for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
-        cat > "$SUITCASE_DIR"/bin/$executable <<ANSIBLE_COMMAND_SHIM
+    local executable
+
+    if [ -d "$SUITCASE_DIR"/python-libs/bin ]; then     # Linux, Mac OS
+        for executable in $(cd "$SUITCASE_DIR"/python-libs/bin; ls -1 $*); do
+            ensure_ansible_shim "$executable" "$SUITCASE_DIR"/python-libs/bin/"$executable"
+        done
+    elif [ -d "$SUITCASE_DIR"/python-libs/*/Scripts ]; then     # Windows (Git bash)
+        local targetdir="$(echo "$SUITCASE_DIR"/python-libs/*/Scripts)"
+        for executable in $(cd "$targetdir"; ls -1 $*.exe); do
+            ensure_ansible_shim "$(basename "$executable" ".exe")" "$targetdir/$executable"
+        done
+    else
+        fatal "Don't know how to make Ansible shims!"
+    fi
+}
+
+ensure_ansible_shim () {
+    local shim_path="$SUITCASE_DIR/bin/$1"
+    cat > "$shim_path" <<ANSIBLE_COMMAND_SHIM
 #!/bin/sh
 
 export PYTHONPATH=$(pip_install_dir):
 export ANSIBLE_ROLES_PATH="$SUITCASE_DIR"/roles
 export ANSIBLE_COLLECTIONS_PATH="$SUITCASE_DIR"
-exec "$SUITCASE_DIR"/bin/python3 "$SUITCASE_DIR"/python-libs/bin/$executable "\$@"
+exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 ANSIBLE_COMMAND_SHIM
-        chmod a+x "$SUITCASE_DIR/bin/$executable"
-    done
+        chmod a+x "$shim_path"
 }
 
 ensure_rbenv () {
