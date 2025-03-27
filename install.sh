@@ -352,7 +352,7 @@ pip_install_dir () {
     # Do so like pip/_internal/locations/_distutils.py does (which is
     # itself based on distutils.command.install from Python's standard
     # library):
-    ${1:-$SUITCASE_DIR/bin/python3} -c "import site; import re; print(re.sub(re.escape(site.USER_BASE), '''$(python_user_base)''', site.USER_SITE))"
+    ${1:-$SUITCASE_DIR/bin/python3} -c "import os; import site; import re; print(re.sub(re.escape(site.USER_BASE.replace(os.sep, '/')), '''$(python_user_base)''', site.USER_SITE.replace(os.sep, '/')))"
 }
 
 ensure_pip () {
