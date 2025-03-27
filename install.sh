@@ -295,6 +295,25 @@ BLACKLISTED_PYTHON
 ensure_python3_shim () {
     ensure_dir "$SUITCASE_DIR/bin"
 
+    if is_windows; then
+        local python
+        for python in python3 python; do
+            if which $python 2>/dev/null && is_python_compatible_with_ansible "$(which $python)"; then
+                make_python3_shim "$(which $python)"
+                return 0
+            fi
+        done
+        fatal <<'PLEASE_INSTALL_PYTHON_YOURSELF'
+Python 3 is required for ansible-suitcase.
+
+Please install it with e.g.
+
+   choco install python3
+
+
+PLEASE_INSTALL_PYTHON_YOURSELF
+    fi
+
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
 
         # Prefer already-installed version, if available
@@ -313,13 +332,11 @@ ensure_python3_shim () {
             fi
         done
 
-        if ! is_windows; then
-            # System-provided Python 3 is absent or defective; download one
-            ensure_python_build_deps
-            ensure_pyenv
-            run_pyenv install --list
-            run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
-        fi
+        # System-provided Python 3 is absent or defective; download one
+        ensure_python_build_deps
+        ensure_pyenv
+        run_pyenv install --list
+        run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
 
         make_python3_shim "../python/bin/python3"
     fi
