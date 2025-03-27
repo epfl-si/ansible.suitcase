@@ -313,11 +313,13 @@ ensure_python3_shim () {
             fi
         done
 
-        # System-provided Python 3 is absent or defective; download one
-        ensure_python_build_deps
-        ensure_pyenv
-        run_pyenv install --list
-        run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
+        if ! is_windows; then
+            # System-provided Python 3 is absent or defective; download one
+            ensure_python_build_deps
+            ensure_pyenv
+            run_pyenv install --list
+            run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
+        fi
 
         make_python3_shim "../python/bin/python3"
     fi
@@ -499,6 +501,13 @@ ANSIBLE_COMMAND_SHIM
         chmod a+x "$shim_path"
 }
 
+is_windows () {
+    case "$(uname -s)" in
+        MINGW*|MSYS*|CYGWIN*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 ensure_rbenv () {
     local rbenv_root="$SUITCASE_DIR/rbenv"
 
@@ -532,7 +541,9 @@ run_gem_install () {
 }
 
 ensure_ruby () {
-    ensure_rbenv
+    if ! is_windows; then
+        ensure_rbenv
+    fi
 
     case "$(ruby --version)" in
         "ruby 3"*) : ;;
@@ -542,13 +553,17 @@ EOF
        ;;
     esac
 
-    already_installed_dir="$(which ruby | xargs dirname)"
-    rbenv_system_dir="$SUITCASE_DIR"/rbenv/versions/rbenv-system
-    ensure_dir "$rbenv_system_dir"/bin
-    for cmd in ruby gem; do
-      ensure_symlink  "$already_installed_dir/$cmd" "$rbenv_system_dir"/bin/$cmd
-    done
-    run_rbenv rehash
+    if ! is_windows; then
+
+        already_installed_dir="$(which ruby | xargs dirname)"
+        rbenv_system_dir="$SUITCASE_DIR"/rbenv/versions/rbenv-system
+        ensure_dir "$rbenv_system_dir"/bin
+        for cmd in ruby gem; do
+            ensure_symlink  "$already_installed_dir/$cmd" "$rbenv_system_dir"/bin/$cmd
+        done
+        run_rbenv rehash
+
+    fi
 }
 
 ensure_rbenv_shim () {
@@ -571,31 +586,33 @@ RBENV_CMD_SHIM
 }
 
 ensure_eyaml () {
-    if [ ! -x "$(readlink "$SUITCASE_DIR/bin/eyaml")" ]; then
-        ensure_ruby
+    if ! is_windows; then
+        if [ ! -x "$(readlink "$SUITCASE_DIR/bin/eyaml")" ]; then
+            ensure_ruby
 
-        if [ -z "$SUITCASE_EYAML_VERSION" ]; then
-            local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby --version)"
-            case "$ruby_version" in
-                "ruby 3"*)
-                    SUITCASE_EYAML_VERSION="4.2.0" ;;
-                "ruby 2"*)
-                    SUITCASE_EYAML_VERSION="3.2.0" ;;
-                *)
-                    warn "Don't know what version of eyaml suits $ruby_version"
-                    unsatisfied eyaml
-                    return ;;
-            esac
+            if [ -z "$SUITCASE_EYAML_VERSION" ]; then
+                local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby --version)"
+                case "$ruby_version" in
+                    "ruby 3"*)
+                        SUITCASE_EYAML_VERSION="4.2.0" ;;
+                    "ruby 2"*)
+                        SUITCASE_EYAML_VERSION="3.2.0" ;;
+                    *)
+                        warn "Don't know what version of eyaml suits $ruby_version"
+                        unsatisfied eyaml
+                        return ;;
+                esac
+            fi
+
+            run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
+            # Temporary — Required for Ruby 3.4.0 and above, which
+            # unbundled the `base64` gem (unbeknownst to `hiera-eyaml` as
+            # of 2025-03...):
+            run_gem_install base64
+            ensure_rbenv_shim eyaml
         fi
-
-        run_gem_install hiera-eyaml -v "${SUITCASE_EYAML_VERSION}"
-        # Temporary — Required for Ruby 3.4.0 and above, which
-        # unbundled the `base64` gem (unbeknownst to `hiera-eyaml` as
-        # of 2025-03...):
-        run_gem_install base64
-        ensure_rbenv_shim eyaml
+        check_version eyaml "$("$SUITCASE_DIR/bin/eyaml" --version | sed -n 's/Welcome to eyaml \([a-z0-9.-]*\).*/\1/p')"
     fi
-    check_version eyaml "$("$SUITCASE_DIR/bin/eyaml" --version | sed -n 's/Welcome to eyaml \([a-z0-9.-]*\).*/\1/p')"
 }
 
 ensure_keybase () {
@@ -687,7 +704,9 @@ ensure_python_build_deps () {
             fatal "Please install the missing packages: $missing_packages"
         fi
     fi
-    ensure_cc
+    if ! is_windows; then
+        ensure_cc
+    fi   # Otherwise hope for the best 🤷
 }
 
 # On Ubuntu, libreadline-dev is required to compile the Ruby readline extension.
