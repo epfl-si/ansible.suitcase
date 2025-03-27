@@ -533,7 +533,6 @@ run_gem_install () {
 
 ensure_ruby () {
     ensure_rbenv
-    ensure_dir "$rbenv_system_dir"/bin
 
     case "$(ruby --version)" in
         "ruby 3"*) : ;;
