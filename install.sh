@@ -292,18 +292,18 @@ BLACKLISTED_PYTHON
     return 0
 }
 
-ensure_python3_shim () {
-    ensure_dir "$SUITCASE_DIR/bin"
 
-    if is_windows; then
-        local python
-        for python in python3 python; do
-            if which $python 2>/dev/null && is_python_compatible_with_ansible "$(which $python)"; then
-                make_python3_shim "$(which $python)"
-                return 0
-            fi
-        done
-        fatal <<'PLEASE_INSTALL_PYTHON_YOURSELF'
+windows_python () {
+    local python
+    for python in python3 python; do
+        python="$(which "$python" 2>/dev/null)"
+        if [ -n "$python" ] && is_python_compatible_with_ansible "$python"; then
+            echo "$python"
+            return 0
+        fi
+    done
+
+    fatal <<'PLEASE_INSTALL_PYTHON_YOURSELF'
 Python 3 is required for ansible-suitcase.
 
 Please install it with e.g.
@@ -312,6 +312,15 @@ Please install it with e.g.
 
 
 PLEASE_INSTALL_PYTHON_YOURSELF
+}
+
+
+ensure_python3_shim () {
+    ensure_dir "$SUITCASE_DIR/bin"
+
+    if is_windows; then
+        make_python3_shim "$(windows_python)"
+        return 0
     fi
 
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
@@ -347,11 +356,10 @@ PLEASE_INSTALL_PYTHON_YOURSELF
 }
 
 make_python3_shim () {
-    local pythonpath="$(pip_install_dir "$1")"
     cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON3_SHIM
 #!/bin/sh
 
-export PYTHONPATH="$pythonpath:"
+export PYTHONPATH='$(suitcase_pythonpath):'
 exec "$1" "\$@"
 
 PYTHON3_SHIM
@@ -369,7 +377,25 @@ pip_install_dir () {
     # Do so like pip/_internal/locations/_distutils.py does (which is
     # itself based on distutils.command.install from Python's standard
     # library):
-    ${1:-$SUITCASE_DIR/bin/python3} -c "import os; import site; import re; print(re.sub(re.escape(site.USER_BASE.replace(os.sep, '/')), '''$(python_user_base)''', site.USER_SITE.replace(os.sep, '/')))"
+    local python
+    if is_windows; then
+        python="$(windows_python)"
+    else
+        python="$SUITCASE_DIR/bin/python3"
+    fi
+    "$python" -c "import site; import re; suffix=re.sub(site.USER_SITE, site.USER_BASE, ''); print('''$(python_user_base)/''' + suffix)"
+}
+
+suitcase_pythonpath () {
+    pip_install_dir | as_os_path
+}
+
+as_os_path () {
+    if is_windows; then
+        sed -E 's|^/([a-zA-Z])/|\U\1:/|; s|/|\\|g'
+    else
+        cat
+    fi
 }
 
 ensure_pip () {
@@ -384,15 +410,15 @@ EOF
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
-        env PYTHONPATH="$(pip_install_dir):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
+        env PYTHONPATH="$(suitcase_pythonpath):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
 
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
-export PATH="$(python_user_base)"/bin:"\$PATH"
-export PYTHONPATH="$(pip_install_dir):"
-export PYTHONUSERBASE="$(python_user_base)"
+export PATH="$(echo "$(python_user_base)/bin" | as_os_path)":"\$PATH"
+export PYTHONPATH='$(suitcase_pythonpath):'
+export PYTHONUSERBASE="$(python_user_base | as_os_path)"
 # We actually don't, as we install into PYTHONUSERBASE:
 export PIP_BREAK_SYSTEM_PACKAGES=1
 
@@ -470,7 +496,7 @@ ensure_pip_shim () {
     cat > "$shim_path" <<PIP_SCRIPT_SHIM
 #!/bin/sh
 
-export PYTHONPATH=$(pip_install_dir):
+export PYTHONPATH='$(suitcase_pythonpath):'
 exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 PIP_SCRIPT_SHIM
 
@@ -510,9 +536,9 @@ ensure_ansible_shim () {
     cat > "$shim_path" <<ANSIBLE_COMMAND_SHIM
 #!/bin/sh
 
-export PYTHONPATH=$(pip_install_dir):
-export ANSIBLE_ROLES_PATH="$SUITCASE_DIR"/roles
-export ANSIBLE_COLLECTIONS_PATH="$SUITCASE_DIR"
+export PYTHONPATH='$(suitcase_pythonpath):'
+export ANSIBLE_ROLES_PATH="$(echo "$SUITCASE_DIR/roles" | as_os_path)"
+export ANSIBLE_COLLECTIONS_PATH="$(echo "$SUITCASE_DIR" | as_os_path)"
 exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 ANSIBLE_COMMAND_SHIM
         chmod a+x "$shim_path"
@@ -774,9 +800,9 @@ ensure_helm () {
     cat > "$SUITCASE_DIR"/bin/helm <<HELM_SHIM
 #!/bin/sh
 
-export HELM_CACHE_HOME=$SUITCASE_DIR/helm
-export HELM_CONFIG_HOME=$SUITCASE_DIR/helm
-export HELM_DATA_HOME=$SUITCASE_DIR/helm
+export HELM_CACHE_HOME="$(echo "$SUITCASE_DIR/helm" | as_os_path)"
+export HELM_CONFIG_HOME="$(echo "$SUITCASE_DIR/helm" | as_os_path)"
+export HELM_DATA_HOME="$(echo "$SUITCASE_DIR/helm" | as_os_path)"
 
 exec "$SUITCASE_DIR/helm/helm" "\$@"
 
