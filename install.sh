@@ -383,7 +383,7 @@ pip_install_dir () {
     else
         python="$SUITCASE_DIR/bin/python3"
     fi
-    "$python" -c "import site; suffix=site.USER_SITE[len(site.USER_BASE):]; print('''$(python_user_base)/''' + suffix)"
+    "$python" -c "import site; suffix=site.USER_SITE[len(site.USER_BASE):]; print('''$(python_user_base)''' + suffix)"
 }
 
 suitcase_pythonpath () {
