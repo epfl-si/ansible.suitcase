@@ -292,7 +292,7 @@ BLACKLISTED_PYTHON
     return 0
 }
 
-ensure_python3 () {
+ensure_python3_shim () {
     ensure_dir "$SUITCASE_DIR/bin"
 
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
@@ -305,7 +305,7 @@ ensure_python3 () {
                     Python*)
                         is_python_compatible_with_ansible "$already_installed" 2>/dev/null || continue
 
-                        ensure_symlink "$already_installed" "$SUITCASE_DIR"/bin/python3
+                        make_python3_shim "$already_installed"
 
                         return 0 ;;
                     *) continue ;;
@@ -319,12 +319,24 @@ ensure_python3 () {
         run_pyenv install --list
         run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
 
-        ensure_symlink "../python/bin/python3" "$SUITCASE_DIR"/bin/python3
+        make_python3_shim "../python/bin/python3"
     fi
 
     # Re-check unconditionnally (and this time, show the error message and
     # bail out in case of failure):
     is_python_compatible_with_ansible "$SUITCASE_DIR"/bin/python3
+}
+
+make_python3_shim () {
+    local pythonpath="$(pip_install_dir "$1")"
+    cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON3_SHIM
+#!/bin/sh
+
+export PYTHONPATH="$pythonpath:"
+exec "$1" "\$@"
+
+PYTHON3_SHIM
+    chmod a+x "$SUITCASE_DIR"/bin/python3
 }
 
 python_user_base () {
@@ -338,11 +350,11 @@ pip_install_dir () {
     # Do so like pip/_internal/locations/_distutils.py does (which is
     # itself based on distutils.command.install from Python's standard
     # library):
-    $SUITCASE_DIR/bin/python3 -c "import site; import re; print(re.sub(re.escape(site.USER_BASE), '''$(python_user_base)''', site.USER_SITE))"
+    ${1:-$SUITCASE_DIR/bin/python3} -c "import site; import re; print(re.sub(re.escape(site.USER_BASE), '''$(python_user_base)''', site.USER_SITE))"
 }
 
 ensure_pip () {
-    ensure_python3
+    ensure_python3_shim
     ensure_dir "$(pip_install_dir)"
     if ! "$SUITCASE_DIR"/bin/python3 -m pip >/dev/null 2>&1; then
         fatal <<EOF
@@ -374,15 +386,6 @@ esac
 
 PIP_SHIM
     chmod a+x "$SUITCASE_DIR"/bin/pip3
-
-    cat > "$SUITCASE_DIR"/bin/python3-shim <<PYTHON3_SHIM
-#!/bin/sh
-
-export PYTHONPATH="$(pip_install_dir):"
-exec "$SUITCASE_DIR/bin/python3" "\$@"
-
-PYTHON3_SHIM
-    chmod a+x "$SUITCASE_DIR"/bin/python3-shim
 
     check_version pip "$("$SUITCASE_DIR"/bin/pip3 --version | sed 's/^pip \([^ ]*\).*/\1/')"
 }
