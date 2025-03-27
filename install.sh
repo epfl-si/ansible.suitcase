@@ -359,7 +359,7 @@ make_python3_shim () {
     cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON3_SHIM
 #!/bin/sh
 
-export PYTHONPATH='$(suitcase_pythonpath):'
+export PYTHONPATH='$(suitcase_pythonpath)$(os_path_sep)'
 exec "$1" "\$@"
 
 PYTHON3_SHIM
@@ -398,6 +398,14 @@ as_os_path () {
     fi
 }
 
+os_path_sep () {
+    if is_windows; then
+        echo ";"
+    else
+        echo ":"
+    fi
+}
+
 ensure_pip () {
     ensure_python3_shim
     ensure_dir "$(pip_install_dir)"
@@ -410,14 +418,14 @@ EOF
     # https://stackoverflow.com/a/67631115/435004
     if [ ! -e "$SUITCASE_DIR"/bin/pip3 ]; then
         # Older pip3's don't honor PYTHONUSERBASE. Lame
-        env PYTHONPATH="$(suitcase_pythonpath):" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
+        env PYTHONPATH="$(suitcase_pythonpath)$(os_path_sep)" "$SUITCASE_DIR"/bin/python3 -m pip install -t "$(pip_install_dir)" pip
     fi
 
     cat > "$SUITCASE_DIR"/bin/pip3 <<PIP_SHIM
 #!/bin/sh
 
-export PATH="$(echo "$(python_user_base)/bin" | as_os_path)":"\$PATH"
-export PYTHONPATH='$(suitcase_pythonpath):'
+export PATH="$(echo "$(python_user_base)/bin" | as_os_path)"$(os_path_sep)"\$PATH"
+export PYTHONPATH='$(suitcase_pythonpath)$(os_path_sep)'
 export PYTHONUSERBASE="$(python_user_base | as_os_path)"
 # We actually don't, as we install into PYTHONUSERBASE:
 export PIP_BREAK_SYSTEM_PACKAGES=1
@@ -496,7 +504,7 @@ ensure_pip_shim () {
     cat > "$shim_path" <<PIP_SCRIPT_SHIM
 #!/bin/sh
 
-export PYTHONPATH='$(suitcase_pythonpath):'
+export PYTHONPATH='$(suitcase_pythonpath)$(os_path_sep)'
 exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 PIP_SCRIPT_SHIM
 
@@ -536,7 +544,7 @@ ensure_ansible_shim () {
     cat > "$shim_path" <<ANSIBLE_COMMAND_SHIM
 #!/bin/sh
 
-export PYTHONPATH='$(suitcase_pythonpath):'
+export PYTHONPATH='$(suitcase_pythonpath)$(os_path_sep)'
 export ANSIBLE_ROLES_PATH="$(echo "$SUITCASE_DIR/roles" | as_os_path)"
 export ANSIBLE_COLLECTIONS_PATH="$(echo "$SUITCASE_DIR" | as_os_path)"
 exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
@@ -794,7 +802,7 @@ ensure_helm () {
 
     curl --silent https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | \
         HELM_INSTALL_DIR="$SUITCASE_DIR/helm" \
-        PATH="$SUITCASE_DIR/helm:$PATH" \
+        PATH="$(echo "$SUITCASE_DIR/helm"|as_os_path)$(os_path_sep)$PATH" \
         bash -x -- /dev/stdin $helm_args
 
     cat > "$SUITCASE_DIR"/bin/helm <<HELM_SHIM
