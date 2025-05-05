@@ -360,7 +360,7 @@ make_python3_shim () {
     cat > "$SUITCASE_DIR"/bin/python3 <<PYTHON3_SHIM
 #!/bin/sh
 
-export PYTHONPATH='$(suitcase_pythonpath)$(os_path_sep)'
+export PYTHONPATH='$(pip_install_dir "$1"| as_os_path)$(os_path_sep)'
 exec "$1" "\$@"
 
 PYTHON3_SHIM
@@ -379,7 +379,11 @@ pip_install_dir () {
     # itself based on distutils.command.install from Python's standard
     # library):
     local python
-    if is_windows; then
+    if [ -n "$1" ] ;  then
+        # For when the caller (i.e. `make_python3_shim`) is the one telling us
+        # which Python to use:
+        python="$1"
+    elif is_windows; then
         python="$(windows_python)"
     else
         python="$SUITCASE_DIR/bin/python3"
