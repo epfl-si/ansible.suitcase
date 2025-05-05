@@ -237,17 +237,6 @@ ensure_dir () {
     [ -d "$1" ] || mkdir -p "$1"
 }
 
-ensure_symlink () {
-    local from="$1"
-    local to
-    case "$2" in
-        */) to="$2$(basename $1)" ;;
-        *) to="$2" ;;
-    esac
-    rm -f "$to" 2>/dev/null || true
-    ln -s "$from" "$to"
-}
-
 ensure_pyenv () {
     local pyenv_root="$SUITCASE_DIR/pyenv"
     if [ ! -x "$pyenv_root/bin/pyenv" ]; then
@@ -620,6 +609,18 @@ EOF
         run_rbenv rehash
 
     fi
+}
+
+ensure_symlink () {
+    # ⚠ Windows®-unfriendly (obviously)
+    local from="$1"
+    local to
+    case "$2" in
+        */) to="$2$(basename $1)" ;;
+        *) to="$2" ;;
+    esac
+    rm -f "$to" 2>/dev/null || true
+    ln -s "$from" "$to"
 }
 
 ensure_rbenv_shim () {
