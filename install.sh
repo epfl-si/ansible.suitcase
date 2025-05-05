@@ -326,19 +326,20 @@ ensure_python3_shim () {
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
 
         # Prefer already-installed version, if available
-        for already_installed in "$(which python3)" /usr/local/bin/python3 /opt/homebrew/bin/python3.11 /usr/local/bin/python3.11 /usr/bin/python3; do
-            if [ -x "$already_installed" ]; then
-                version="$($already_installed --version 2>&1)"
-                case "$version" in
-                    Python*)
-                        is_python_compatible_with_ansible "$already_installed" 2>/dev/null || continue
+        for already_installed in $(which -a python3) /usr/local/bin/python3 /opt/homebrew/bin/python3.11 /usr/local/bin/python3.11 /usr/bin/python3; do
+            if [ ! -x "$already_installed" ]; then continue; fi
+            case "$already_installed" in
+                *pyenv*) continue ;;
+            esac
+            version="$($already_installed --version 2>&1)"
+            case "$version" in
+                Python*)
+                    is_python_compatible_with_ansible "$already_installed" 2>/dev/null || continue
 
-                        make_python3_shim "$already_installed"
-
-                        return 0 ;;
-                    *) continue ;;
-                esac
-            fi
+                    make_python3_shim "$already_installed"
+                    
+                    return 0 ;;
+            esac
         done
 
         # System-provided Python 3 is absent or defective; download one
