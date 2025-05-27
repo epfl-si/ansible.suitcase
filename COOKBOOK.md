@@ -46,7 +46,11 @@ ensure_suitcase () {    # ④
 
 ensure_suitcase
 [ "$1" == "--help" ] && help
+
 # ⑧
+# export ANSIBLE_STDOUT_CALLBACK=debug
+
+# ⑨
 ansible-playbook -i inventory.yml playbook.yml "$@"
 ```
 
@@ -72,6 +76,9 @@ ansible-playbook -i inventory.yml playbook.yml "$@"
 : In order to use the installed suitcase, a couple of environment variables must be set, most notably `$PATH` so that the wrapper script picks up the right `ansible`, `ansible-playbook` etc. executables. This is what the `ensure_ansible_runtime` function takes care of.
 
 ⑧
+: Uncomment for a slightly more readable error messages from ansible
+
+⑨
 : The script transfers control to `ansible-playbook` at the end and... That's pretty much it.
 
 ## Adding a `--prod` flag
