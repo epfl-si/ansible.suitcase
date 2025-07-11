@@ -592,6 +592,7 @@ ensure_ruby () {
 
     case "$(ruby --version)" in
         "ruby 3"*) : ;;
+        "ruby 2"*) : ;;
         *) fatal <<EOF
 Please install Ruby version 3.x into your PATH.
 EOF
