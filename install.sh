@@ -445,6 +445,8 @@ ensure_pip_deps () {
     for dep in $SUITCASE_PIP_EXTRA; do
         ensure_pip_dep "$dep"
     done
+
+    maybe_monkey_patch_passlib
 }
 
 ensure_pip_dep () {
@@ -500,6 +502,15 @@ exec "$SUITCASE_DIR"/bin/python3 "$2" "\$@"
 PIP_SCRIPT_SHIM
 
     chmod a+x "$shim_path"
+}
+
+maybe_monkey_patch_passlib () {
+    # https://github.com/pyca/bcrypt/issues/684#issuecomment-3092458309
+    local passlib_bcrypt="$SUITCASE_DIR/python-libs/lib/python/site-packages/passlib/handlers/bcrypt.py"
+    if grep -q bcrypt.__about__ "$passlib_bcrypt" 2>/dev/null ; then
+      sed -e 's/bcrypt.__about__.__version__/bcrypt.__version__/' < "$passlib_bcrypt" > "$passlib_bcrypt".NEW
+      mv "$passlib_bcrypt".NEW "$passlib_bcrypt"
+    fi
 }
 
 ensure_ansible () {
