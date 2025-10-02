@@ -10,10 +10,6 @@
 # $SUITCASE_ANSIBLE_VERSION       The precise version of Ansible to use.
 # (mandatory)
 #
-# $SUITCASE_PYTHON_VERSIONS       Obsolete, do not use.
-#
-# $SUITCASE_RUBY_VERSIONS         Obsolete, do not use.
-#
 # $SUITCASE_PIP_EXTRA             Additional modules to install with `pip install`
 #                                 (separated with spaces)
 #
