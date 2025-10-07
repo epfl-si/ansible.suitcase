@@ -20,7 +20,7 @@ anything as root.
 * [exportsible](https://github.com/epfl-si/infoscience-exports/blob/master/ansible/exportsible)
 * [foresible](https://github.com/epfl-si/idevfsd.foreman/blob/master/foresible)
 * [fsdteamsible](https://github.com/epfl-fsd/fsd.team/blob/master/fsdteamsible)
-* [gitsible](https://gitlab.com/epfl-isasfsd/gitlab-docker/-/blob/master/ansible/gitsible)
+* [gitsible](https://gitlab.com/epfl-isasfsd/gitlab-ops/-/blob/master/ansible/gitsible)
 * [gosible](https://gitlab.com/epfl-isasfsd/go-ops/-/blob/master/ansible/gosible)
 * [ictsible](https://github.com/ponsfrilus/ict-bot/blob/master/ops/ansible/ictsible)
 * [isasible](https://github.com/epfl-si/isa-monitoring/blob/master/ansible/isasible)
