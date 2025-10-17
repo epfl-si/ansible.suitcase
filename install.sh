@@ -443,7 +443,13 @@ ensure_pip_deps () {
     ensure_pip_dep pyOpenSSL -U --prefer-binary
 
     for dep in $SUITCASE_PIP_EXTRA; do
-        ensure_pip_dep "$dep"
+        case "$dep" in
+            bcrypt)
+                # https://github.com/ansible/ansible/issues/85919#issuecomment-3382545109
+                ensure_pip_dep "bcrypt<5" ;;
+            *)
+                ensure_pip_dep "$dep" ;;
+        esac
     done
 
     maybe_monkey_patch_passlib
