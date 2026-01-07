@@ -346,7 +346,7 @@ make_python3_shim () {
 #!/bin/sh
 
 export PYTHONPATH='$(pip_install_dir "$1"| as_os_path)$(os_path_sep)'
-export SSL_CERT_FILE='$$SUITCASE_DIR'/python-libs/lib/python/site-packages/certifi/cacert.pem
+export SSL_CERT_FILE='$SUITCASE_DIR'/python-libs/lib/python/site-packages/certifi/cacert.pem
 exec "$1" "\$@"
 
 PYTHON3_SHIM
