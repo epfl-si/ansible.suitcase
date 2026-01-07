@@ -584,11 +584,11 @@ run_rbenv () {
 }
 
 rbenv_version () {
-    ls -1 "$SUITCASE_DIR/rbenv/versions" | head -1
+    ls -1 "$SUITCASE_DIR/rbenv/versions" | sed -n 's/^rbenv-//p' | head -1
 }
 
 rbenv_gem_home () {
-    echo "$SUITCASE_DIR/rbenv/versions/$(rbenv_version)"
+    echo "$SUITCASE_DIR/rbenv/versions/rbenv-$(rbenv_version)"
 }
 
 run_gem_install () {
