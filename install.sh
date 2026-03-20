@@ -604,10 +604,11 @@ ensure_ruby () {
     fi
 
     case "$(ruby --version)" in
+        "ruby 4"*) : ;;
         "ruby 3"*) : ;;
         "ruby 2"*) : ;;
         *) fatal <<EOF
-Please install Ruby version 3.x into your PATH.
+Please install Ruby version 3.x or 4.x into your PATH.
 EOF
        ;;
     esac
@@ -664,6 +665,8 @@ ensure_eyaml () {
             if [ -z "$SUITCASE_EYAML_VERSION" ]; then
                 local ruby_version="$("$SUITCASE_DIR"/rbenv/shims/ruby --version)"
                 case "$ruby_version" in
+                    "ruby 4"*)
+                        SUITCASE_EYAML_VERSION="5.0.0" ;;
                     "ruby 3"*)
                         SUITCASE_EYAML_VERSION="4.2.0" ;;
                     "ruby 2"*)
