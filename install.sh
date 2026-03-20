@@ -604,10 +604,11 @@ ensure_ruby () {
     fi
 
     case "$(ruby --version)" in
+        "ruby 4"*) : ;;
         "ruby 3"*) : ;;
         "ruby 2"*) : ;;
         *) fatal <<EOF
-Please install Ruby version 3.x into your PATH.
+Please install Ruby version 3.x or 4.x into your PATH.
 EOF
        ;;
     esac
