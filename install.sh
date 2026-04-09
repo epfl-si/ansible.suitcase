@@ -595,7 +595,7 @@ run_gem_install () {
     RBENV_VERSION="$(rbenv_version)" \
                  GEM_HOME="$(rbenv_gem_home)" \
                  GEM_PATH= \
-                 "$SUITCASE_DIR/rbenv/shims/gem" install "$@"
+                 "$SUITCASE_DIR/rbenv/shims/gem" install "$@" --no-user-install
 }
 
 ensure_ruby () {
