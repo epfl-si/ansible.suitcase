@@ -343,10 +343,10 @@ ensure_python3_shim () {
         # System-provided Python 3 is absent or defective; download one
         ensure_python_build_deps
         ensure_pyenv
-        run_pyenv install --list
-        run_pyenv install $(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1)
 
-        make_python3_shim "../python/bin/python3"
+        local pyenv_python3_version="$(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1 | tr -d ' ')"
+        run_pyenv install "$pyenv_python3_version"
+        make_python3_shim "$(realpath "$SUITCASE_DIR"/pyenv/versions/$pyenv_python3_version/bin/python3)"
     fi
 
     # Re-check unconditionnally (and this time, show the error message and
