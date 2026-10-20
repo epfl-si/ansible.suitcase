@@ -282,6 +282,15 @@ Fatal: Ansible $SUITCASE_ANSIBLE_VERSION requires Python >= 3.12.
 
 ===================================================================================
 OBSOLETE_PYTHON
+        3.15.0/14.5.0) warn <<PYTHON_TOO_SOON ; return 1 ;;
+===================================================================================
+
+Fatal: Ansible $SUITCASE_ANSIBLE_VERSION fails with Python 3.15.0.
+
+Bug report to follow later, maybe.
+
+===================================================================================
+PYTHON_TOO_SOON
     esac
     return 0
 }
