@@ -260,8 +260,8 @@ run_pyenv () {
 
 is_python_compatible_with_ansible () {
     local python_binary="$1"
-    local version="$("$python_binary" --version | sed 's/Python //')"
-    case "$version/$SUITCASE_ANSIBLE_VERSION" in
+    local python_version="$("$python_binary" --version | sed 's/Python //')"
+    case "$python_version/$SUITCASE_ANSIBLE_VERSION" in
         3.12*/[45]*) warn <<BLACKLISTED_PYTHON ; return 1 ;;
 ===================================================================================
 
@@ -273,6 +273,15 @@ See: https://github.com/ansible/ansible/issues/81946
 
 ===================================================================================
 BLACKLISTED_PYTHON
+        3.10*/14.*) warn <<OBSOLETE_PYTHON ; return 1 ;;
+===================================================================================
+
+Fatal: Ansible $SUITCASE_ANSIBLE_VERSION requires Python >= 3.12.
+
+💡 If using Ubuntu Jammy, see: https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
+
+===================================================================================
+OBSOLETE_PYTHON
     esac
     return 0
 }
@@ -311,7 +320,11 @@ ensure_python3_shim () {
     if [ ! -x "$SUITCASE_DIR"/bin/python3 ]; then
 
         # Prefer already-installed version, if available
-        for already_installed in $(which -a python3) /usr/local/bin/python3 /opt/homebrew/bin/python3.11 /usr/local/bin/python3.11 /usr/bin/python3; do
+        for already_installed in $(which -a python3) /usr/local/bin/python3 \
+            /opt/homebrew/bin/python3.14 /usr/local/bin/python3.14 /usr/bin/python3.14 \
+            /opt/homebrew/bin/python3.12 /usr/local/bin/python3.12 /usr/bin/python3.12 \
+            /usr/bin/python3
+        do
             if [ ! -x "$already_installed" ]; then continue; fi
             case "$already_installed" in
                 *pyenv*) continue ;;
