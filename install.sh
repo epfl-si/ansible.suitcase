@@ -353,7 +353,8 @@ ensure_python3_shim () {
         ensure_python_build_deps
         ensure_pyenv
 
-        local pyenv_python3_version="$(run_pyenv install --list | grep '^ *3[0-9.]*$' | tail -1 | tr -d ' ')"
+        local pyenv_python3_version="$(run_pyenv install --list | grep '^ *3[0-9.]*$' \
+          | grep -v 3.15.0 | tail -1 | tr -d ' ')"
         run_pyenv install "$pyenv_python3_version"
         make_python3_shim "$(realpath "$SUITCASE_DIR"/pyenv/versions/$pyenv_python3_version/bin/python3)"
     fi
