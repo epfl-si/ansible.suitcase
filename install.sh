@@ -767,7 +767,7 @@ ensure_python_build_deps () {
             case "$(lsb_release -s -i)" in
                 Ubuntu|Debian)
                     install_command="apt install"
-                    for pkg in build-essential zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat1-dev libpcap-dev liblzma-dev libpcre3-dev libffi-dev; do
+                    for pkg in build-essential zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat1-dev libpcap-dev liblzma-dev libpcre3-dev libffi-dev tk-dev; do
                         if ! dpkg --get-selections |cut -f1|grep $pkg; then
                             missing_packages="$missing_packages $pkg"
                         fi
